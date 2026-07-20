@@ -3,12 +3,11 @@ package authgoblue
 import (
 	"github.com/qwerius/authgoblue/ctx"
 	"github.com/qwerius/authgoblue/hooks"
-	"github.com/qwerius/authgoblue/login"
-	"github.com/qwerius/authgoblue/logout"
+
 	"github.com/qwerius/authgoblue/middleware"
 	"github.com/qwerius/authgoblue/password"
 	"github.com/qwerius/authgoblue/permission"
-	"github.com/qwerius/authgoblue/providers"
+
 	"github.com/qwerius/authgoblue/refresh"
 	"github.com/qwerius/authgoblue/revoke"
 	"github.com/qwerius/authgoblue/role"
@@ -20,21 +19,18 @@ import (
 type AuthGoBlue struct {
 	config Config
 
-	Token         *token.Service
-	Password      *password.Service
-	Context       *ctx.Service
-	RoleService   *role.Service
-	Permission    *permission.Service
-	Revoke        *revoke.Service
-	Session       *session.Service
-	Middleware    *middleware.Service
-	Providers     *providers.Registry
-	Storage       *storage.Registry
-	Hooks         *hooks.Registry
-	Refresh       *refresh.Service
-	Logout        *logout.Service
-	LogoutHandler *logout.Handler
-	Login         *login.Service
+	Token       *token.Service
+	Password    *password.Service
+	Context     *ctx.Service
+	RoleService *role.Service
+	Permission  *permission.Service
+	Revoke      *revoke.Service
+	Session     *session.Service
+	Middleware  *middleware.Service
+
+	Storage *storage.Registry
+	Hooks   *hooks.Registry
+	Refresh *refresh.Service
 }
 
 func New(config Config) *AuthGoBlue {
@@ -108,20 +104,6 @@ func New(config Config) *AuthGoBlue {
 		agb.Session,
 	)
 
-	// Logout
-	agb.Logout = logout.NewService(
-		agb.Token,
-		agb.Session,
-	)
-
-	agb.LogoutHandler = logout.NewHandler(
-		agb.Logout,
-		config.CookieName,
-	)
-
-	// Providers
-	agb.Providers = providers.NewRegistry()
-
 	// Middleware
 	agb.Middleware = middleware.NewService(
 		agb.Token,
@@ -144,28 +126,6 @@ func New(config Config) *AuthGoBlue {
 	agb.Hooks = hooks.NewRegistry()
 
 	return agb
-}
-
-// SetupLogin menghubungkan user provider dengan login service.
-//
-// Provider berasal dari aplikasi pengguna module.
-// Bisa berasal dari database, LDAP, API, dll.
-func (a *AuthGoBlue) SetupLogin(
-	provider providers.Provider,
-) {
-
-	a.Login = login.NewService(
-
-		provider,
-
-		a.Password,
-
-		a.Token,
-
-		a.Session,
-
-		a.Hooks,
-	)
 }
 
 func (a *AuthGoBlue) Config() Config {
