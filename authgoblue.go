@@ -1,0 +1,174 @@
+package authgoblue
+
+import (
+	"authgoblue/ctx"
+	"authgoblue/hooks"
+	"authgoblue/login"
+	"authgoblue/logout"
+	"authgoblue/middleware"
+	"authgoblue/password"
+	"authgoblue/permission"
+	"authgoblue/providers"
+	"authgoblue/refresh"
+	"authgoblue/revoke"
+	"authgoblue/role"
+	"authgoblue/session"
+	"authgoblue/storage"
+	"authgoblue/token"
+)
+
+type AuthGoBlue struct {
+	config Config
+
+	Token         *token.Service
+	Password      *password.Service
+	Context       *ctx.Service
+	RoleService   *role.Service
+	Permission    *permission.Service
+	Revoke        *revoke.Service
+	Session       *session.Service
+	Middleware    *middleware.Service
+	Providers     *providers.Registry
+	Storage       *storage.Registry
+	Hooks         *hooks.Registry
+	Refresh       *refresh.Service
+	Logout        *logout.Service
+	LogoutHandler *logout.Handler
+	Login         *login.Service
+}
+
+func New(config Config) *AuthGoBlue {
+
+	config = applyDefaults(config)
+
+	agb := &AuthGoBlue{
+		config: config,
+	}
+
+	// Context
+	agb.Context = ctx.NewService()
+
+	// Token
+	agb.Token = token.NewService(
+		config.Secret,
+		config.Issuer,
+		config.AccessTokenTTL,
+		config.RefreshTokenTTL,
+	)
+
+	// Password
+	agb.Password = password.NewService()
+
+	// Role
+	agb.RoleService = role.NewService(
+		agb.Context,
+	)
+
+	// Permission
+	agb.Permission = permission.NewService(
+		agb.Context,
+	)
+
+	// Revoke
+	var revokeStore revoke.Store
+
+	if config.RevokeStore != nil {
+
+		revokeStore = config.RevokeStore
+
+	} else {
+
+		revokeStore = revoke.NewMemoryStore()
+	}
+
+	agb.Revoke = revoke.NewService(
+		revokeStore,
+	)
+
+	// Session
+	var sessionStore session.Store
+
+	if config.SessionStore != nil {
+
+		sessionStore = config.SessionStore
+
+	} else {
+
+		sessionStore = session.NewMemoryStore()
+	}
+
+	agb.Session = session.NewService(
+		sessionStore,
+	)
+
+	// Refresh
+	agb.Refresh = refresh.NewService(
+		agb.Token,
+		agb.Revoke,
+		agb.Session,
+	)
+
+	// Logout
+	agb.Logout = logout.NewService(
+		agb.Token,
+		agb.Session,
+	)
+
+	agb.LogoutHandler = logout.NewHandler(
+		agb.Logout,
+		config.CookieName,
+	)
+
+	// Providers
+	agb.Providers = providers.NewRegistry()
+
+	// Middleware
+	agb.Middleware = middleware.NewService(
+		agb.Token,
+		agb.Context,
+		agb.RoleService,
+		agb.Permission,
+		agb.Revoke,
+		agb.Session,
+
+		config.Header,
+		config.Prefix,
+		config.Cookie,
+		config.CookieName,
+	)
+
+	// Storage
+	agb.Storage = storage.NewRegistry()
+
+	// Hooks
+	agb.Hooks = hooks.NewRegistry()
+
+	return agb
+}
+
+// SetupLogin menghubungkan user provider dengan login service.
+//
+// Provider berasal dari aplikasi pengguna module.
+// Bisa berasal dari database, LDAP, API, dll.
+func (a *AuthGoBlue) SetupLogin(
+	provider providers.Provider,
+) {
+
+	a.Login = login.NewService(
+
+		provider,
+
+		a.Password,
+
+		a.Token,
+
+		a.Session,
+
+		a.Hooks,
+	)
+}
+
+func (a *AuthGoBlue) Config() Config {
+
+	return a.config
+}
