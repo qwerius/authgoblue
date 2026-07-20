@@ -3,7 +3,7 @@ package authgoblue_test
 import (
 	"testing"
 
-	"authgoblue/claims"
+	"github.com/qwerius/authgoblue/claims"
 )
 
 func TestRefreshTokenRotation(t *testing.T) {

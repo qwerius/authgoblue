@@ -1,15 +1,16 @@
 package ctx
 
 import (
-	"authgoblue/claims"
 	"errors"
+
+	"github.com/qwerius/authgoblue/claims"
 
 	"github.com/gofiber/fiber/v3"
 )
 
-var errClaimsNotFound = errors.New("authgoblue: claims not found")
+var errClaimsNotFound = errors.New("github.com/qwerius/authgoblue: claims not found")
 
-const claimsKey = "authgoblue_claims"
+const claimsKey = "github.com/qwerius/authgoblue_claims"
 
 func (s *Service) SetClaims(
 	c fiber.Ctx,

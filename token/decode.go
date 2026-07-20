@@ -1,17 +1,18 @@
 package token
 
 import (
-	"authgoblue/claims"
 	"encoding/json"
 	"errors"
 	"strings"
+
+	"github.com/qwerius/authgoblue/claims"
 )
 
 var (
-	errMalformedToken   = errors.New("authgoblue: malformed token")
-	errInvalidSignature = errors.New("authgoblue: invalid signature")
-	errInvalidHeader    = errors.New("authgoblue: invalid jwt header")
-	errInvalidPayload   = errors.New("authgoblue: invalid payload")
+	errMalformedToken   = errors.New("github.com/qwerius/authgoblue: malformed token")
+	errInvalidSignature = errors.New("github.com/qwerius/authgoblue: invalid signature")
+	errInvalidHeader    = errors.New("github.com/qwerius/authgoblue: invalid jwt header")
+	errInvalidPayload   = errors.New("github.com/qwerius/authgoblue: invalid payload")
 )
 
 func (s *Service) decodeJWT(

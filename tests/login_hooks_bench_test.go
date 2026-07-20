@@ -5,12 +5,12 @@ import (
 	"testing"
 	"time"
 
-	"authgoblue/hooks"
-	"authgoblue/login"
-	"authgoblue/password"
-	"authgoblue/providers"
-	"authgoblue/session"
-	"authgoblue/token"
+	"github.com/qwerius/authgoblue/hooks"
+	"github.com/qwerius/authgoblue/login"
+	"github.com/qwerius/authgoblue/password"
+	"github.com/qwerius/authgoblue/providers"
+	"github.com/qwerius/authgoblue/session"
+	"github.com/qwerius/authgoblue/token"
 )
 
 type benchLoginProvider struct {
@@ -90,7 +90,7 @@ func newBenchLoginService(
 
 			"bench-secret",
 
-			"authgoblue",
+			"github.com/qwerius/authgoblue",
 
 			15*time.Minute,
 

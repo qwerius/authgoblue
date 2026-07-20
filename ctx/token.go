@@ -1,7 +1,7 @@
 package ctx
 
 import (
-	"authgoblue/claims"
+	"github.com/qwerius/authgoblue/claims"
 
 	"github.com/gofiber/fiber/v3"
 )

@@ -142,7 +142,7 @@ Menentukan nama cookie yang berisi token.
 Default:
 
 ```go
-CookieName: "authgoblue_token"
+CookieName: "github.com/qwerius/authgoblue_token"
 ```
 
 Contoh:
@@ -181,7 +181,7 @@ authgoblue.Config{
 
 	Cookie: false,
 
-	CookieName: "authgoblue_token",
+	CookieName: "github.com/qwerius/authgoblue_token",
 
 	MaxSessions: 5,
 }
@@ -462,7 +462,7 @@ Contoh lengkap:
 package main
 
 import (
-	"authgoblue"
+	"github.com/qwerius/authgoblue"
 
 	"github.com/gofiber/fiber/v3"
 )

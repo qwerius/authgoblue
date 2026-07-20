@@ -3,7 +3,7 @@ package authgoblue
 import (
 	"context"
 
-	"authgoblue/login"
+	"github.com/qwerius/authgoblue/login"
 )
 
 // SignIn adalah facade sederhana untuk proses login.

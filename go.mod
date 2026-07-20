@@ -1,4 +1,4 @@
-module authgoblue
+module github.com/qwerius/authgoblue
 
 go 1.26.3
 

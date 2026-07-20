@@ -1,8 +1,9 @@
 package token
 
 import (
-	"authgoblue/claims"
 	"time"
+
+	"github.com/qwerius/authgoblue/claims"
 
 	"github.com/google/uuid"
 )

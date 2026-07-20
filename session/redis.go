@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	sessionPrefix          = "authgoblue:session:"
-	sessionUserIndexPrefix = "authgoblue:session:user:"
+	sessionPrefix          = "github.com/qwerius/authgoblue:session:"
+	sessionUserIndexPrefix = "github.com/qwerius/authgoblue:session:user:"
 )
 
 type RedisStore struct {

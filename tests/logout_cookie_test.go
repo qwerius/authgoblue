@@ -1,11 +1,12 @@
 package authgoblue_test
 
 import (
-	"authgoblue"
-	"authgoblue/claims"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/qwerius/authgoblue"
+	"github.com/qwerius/authgoblue/claims"
 
 	"github.com/gofiber/fiber/v3"
 )
@@ -22,7 +23,7 @@ func TestLogoutClearsCookie(
 
 				Cookie: true,
 
-				CookieName: "authgoblue_token",
+				CookieName: "github.com/qwerius/authgoblue_token",
 			},
 		)
 
@@ -65,7 +66,7 @@ func TestLogoutClearsCookie(
 
 	req.AddCookie(
 		&http.Cookie{
-			Name:  "authgoblue_token",
+			Name:  "github.com/qwerius/authgoblue_token",
 			Value: token,
 		},
 	)
@@ -95,7 +96,7 @@ func TestLogoutClearsCookie(
 	for _, cookie := range cookies {
 
 		if cookie.Name ==
-			"authgoblue_token" {
+			"github.com/qwerius/authgoblue_token" {
 
 			found = true
 

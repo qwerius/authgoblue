@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"authgoblue"
-	"authgoblue/claims"
-	"authgoblue/token"
+	"github.com/qwerius/authgoblue"
+	"github.com/qwerius/authgoblue/claims"
+	"github.com/qwerius/authgoblue/token"
 )
 
 func TestErrorTypeInvalidIssuer(t *testing.T) {

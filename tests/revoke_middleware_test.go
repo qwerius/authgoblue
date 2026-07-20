@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"authgoblue"
-	"authgoblue/claims"
+	"github.com/qwerius/authgoblue"
+	"github.com/qwerius/authgoblue/claims"
 
 	"github.com/gofiber/fiber/v3"
 )

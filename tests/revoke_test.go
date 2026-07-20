@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"authgoblue/revoke"
+	"github.com/qwerius/authgoblue/revoke"
 )
 
 func TestTokenRevocation(t *testing.T) {

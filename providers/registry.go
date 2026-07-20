@@ -6,7 +6,7 @@ import (
 )
 
 var ErrProviderNotFound = errors.New(
-	"authgoblue: provider not found",
+	"github.com/qwerius/authgoblue: provider not found",
 )
 
 type Registry struct {

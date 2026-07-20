@@ -3,8 +3,8 @@ package main
 import (
 	"time"
 
-	"authgoblue"
-	"authgoblue/claims"
+	"github.com/qwerius/authgoblue"
+	"github.com/qwerius/authgoblue/claims"
 
 	"github.com/gofiber/fiber/v3"
 )
@@ -18,7 +18,7 @@ func main() {
 		Header:          "Authorization",
 		Prefix:          "Bearer",
 		Cookie:          false,
-		CookieName:      "authgoblue_token",
+		CookieName:      "github.com/qwerius/authgoblue_token",
 	})
 
 	app := fiber.New()

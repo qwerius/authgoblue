@@ -1,7 +1,7 @@
 package permission
 
 import (
-	"authgoblue/ctx"
+	"github.com/qwerius/authgoblue/ctx"
 )
 
 type Service struct {

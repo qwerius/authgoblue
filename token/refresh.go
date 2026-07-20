@@ -1,7 +1,7 @@
 package token
 
 import (
-	"authgoblue/claims"
+	"github.com/qwerius/authgoblue/claims"
 )
 
 func (s *Service) RefreshAccessToken(

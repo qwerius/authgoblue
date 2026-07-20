@@ -1,10 +1,11 @@
 package authgoblue_test
 
 import (
-	"authgoblue/session"
 	"context"
 	"testing"
 	"time"
+
+	"github.com/qwerius/authgoblue/session"
 
 	"github.com/redis/go-redis/v9"
 )

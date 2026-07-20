@@ -1,14 +1,15 @@
 package token
 
 import (
-	"authgoblue/claims"
 	"errors"
 	"time"
+
+	"github.com/qwerius/authgoblue/claims"
 )
 
 var (
-	ErrInvalidAccessType  = errors.New("authgoblue: invalid access token type")
-	ErrInvalidRefreshType = errors.New("authgoblue: invalid refresh token type")
+	ErrInvalidAccessType  = errors.New("github.com/qwerius/authgoblue: invalid access token type")
+	ErrInvalidRefreshType = errors.New("github.com/qwerius/authgoblue: invalid refresh token type")
 )
 
 func (s *Service) ValidateAccessToken(

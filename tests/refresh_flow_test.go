@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"authgoblue"
-	"authgoblue/claims"
+	"github.com/qwerius/authgoblue"
+	"github.com/qwerius/authgoblue/claims"
 )
 
 func newRefreshFlowAuthGoBlue() *authgoblue.AuthGoBlue {

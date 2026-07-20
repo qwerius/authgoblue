@@ -1,8 +1,8 @@
 package logout
 
 import (
-	"authgoblue/session"
-	"authgoblue/token"
+	"github.com/qwerius/authgoblue/session"
+	"github.com/qwerius/authgoblue/token"
 )
 
 type Service struct {

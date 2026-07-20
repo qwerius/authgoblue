@@ -1,12 +1,12 @@
 package middleware
 
 import (
-	"authgoblue/ctx"
-	"authgoblue/permission"
-	"authgoblue/revoke"
-	"authgoblue/role"
-	"authgoblue/session"
-	"authgoblue/token"
+	"github.com/qwerius/authgoblue/ctx"
+	"github.com/qwerius/authgoblue/permission"
+	"github.com/qwerius/authgoblue/revoke"
+	"github.com/qwerius/authgoblue/role"
+	"github.com/qwerius/authgoblue/session"
+	"github.com/qwerius/authgoblue/token"
 )
 
 type Service struct {

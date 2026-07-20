@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"authgoblue/claims"
+	"github.com/qwerius/authgoblue/claims"
 )
 
 func TestClaimsJSONMarshal(t *testing.T) {

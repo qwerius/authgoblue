@@ -6,7 +6,7 @@ import (
 	"github.com/gofiber/fiber/v3"
 )
 
-var errRoleForbidden = errors.New("authgoblue: role forbidden")
+var errRoleForbidden = errors.New("github.com/qwerius/authgoblue: role forbidden")
 
 func (s *Service) Get(
 	c fiber.Ctx,

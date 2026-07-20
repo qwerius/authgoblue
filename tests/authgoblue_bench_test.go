@@ -1,8 +1,6 @@
 package authgoblue_test
 
 import (
-	"authgoblue"
-	"authgoblue/claims"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -10,8 +8,11 @@ import (
 	"testing"
 	"time"
 
-	"authgoblue/middleware"
-	"authgoblue/session"
+	"github.com/qwerius/authgoblue"
+	"github.com/qwerius/authgoblue/claims"
+
+	"github.com/qwerius/authgoblue/middleware"
+	"github.com/qwerius/authgoblue/session"
 
 	"github.com/gofiber/fiber/v3"
 
@@ -27,7 +28,7 @@ func newBenchmarkAuthGoBlue() *authgoblue.AuthGoBlue {
 		Header:          "Authorization",
 		Prefix:          "Bearer",
 		Cookie:          false,
-		CookieName:      "authgoblue_token",
+		CookieName:      "github.com/qwerius/authgoblue_token",
 	})
 }
 

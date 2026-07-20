@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"authgoblue/revoke"
+	"github.com/qwerius/authgoblue/revoke"
 
 	"github.com/redis/go-redis/v9"
 )

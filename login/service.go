@@ -3,12 +3,12 @@ package login
 import (
 	"context"
 
-	"authgoblue/claims"
-	"authgoblue/hooks"
-	"authgoblue/password"
-	"authgoblue/providers"
-	"authgoblue/session"
-	"authgoblue/token"
+	"github.com/qwerius/authgoblue/claims"
+	"github.com/qwerius/authgoblue/hooks"
+	"github.com/qwerius/authgoblue/password"
+	"github.com/qwerius/authgoblue/providers"
+	"github.com/qwerius/authgoblue/session"
+	"github.com/qwerius/authgoblue/token"
 )
 
 type Service struct {

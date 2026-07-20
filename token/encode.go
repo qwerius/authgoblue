@@ -1,15 +1,16 @@
 package token
 
 import (
-	"authgoblue/claims"
 	"encoding/json"
 	"errors"
 	"strings"
+
+	"github.com/qwerius/authgoblue/claims"
 )
 
 const jwtHeader = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
 
-var errMarshalClaims = errors.New("authgoblue: failed to marshal claims")
+var errMarshalClaims = errors.New("github.com/qwerius/authgoblue: failed to marshal claims")
 
 func (s *Service) encodeJWT(
 	c claims.Claims,

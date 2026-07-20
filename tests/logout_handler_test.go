@@ -1,10 +1,11 @@
 package authgoblue_test
 
 import (
-	"authgoblue"
-	"authgoblue/claims"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/qwerius/authgoblue"
+	"github.com/qwerius/authgoblue/claims"
 
 	"github.com/gofiber/fiber/v3"
 )

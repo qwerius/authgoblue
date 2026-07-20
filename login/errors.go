@@ -4,14 +4,14 @@ import "errors"
 
 var (
 	ErrInvalidCredentials = errors.New(
-		"authgoblue: invalid credentials",
+		"github.com/qwerius/authgoblue: invalid credentials",
 	)
 
 	ErrUserNotFound = errors.New(
-		"authgoblue: user not found",
+		"github.com/qwerius/authgoblue: user not found",
 	)
 
 	ErrLoginDisabled = errors.New(
-		"authgoblue: login disabled",
+		"github.com/qwerius/authgoblue: login disabled",
 	)
 )

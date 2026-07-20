@@ -1,9 +1,10 @@
 package authgoblue_test
 
 import (
-	"authgoblue"
-	"authgoblue/claims"
 	"testing"
+
+	"github.com/qwerius/authgoblue"
+	"github.com/qwerius/authgoblue/claims"
 )
 
 func TestLogoutRevokesSession(

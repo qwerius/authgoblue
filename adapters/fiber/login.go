@@ -5,7 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v3"
 
-	"authgoblue/login"
+	"github.com/qwerius/authgoblue/login"
 )
 
 type LoginHandler struct {

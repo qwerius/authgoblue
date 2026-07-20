@@ -1,21 +1,22 @@
 package token
 
 import (
-	"authgoblue/claims"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"strings"
 	"time"
+
+	"github.com/qwerius/authgoblue/claims"
 )
 
 var (
-	errUnexpectedSigningMethod = errors.New("authgoblue: unexpected signing method")
-	errInvalidToken            = errors.New("authgoblue: invalid token")
-	errExpiredToken            = errors.New("authgoblue: token expired")
-	errInvalidAccessTokenType  = errors.New("authgoblue: invalid access token type")
-	errInvalidRefreshTokenType = errors.New("authgoblue: invalid refresh token type")
+	errUnexpectedSigningMethod = errors.New("github.com/qwerius/authgoblue: unexpected signing method")
+	errInvalidToken            = errors.New("github.com/qwerius/authgoblue: invalid token")
+	errExpiredToken            = errors.New("github.com/qwerius/authgoblue: token expired")
+	errInvalidAccessTokenType  = errors.New("github.com/qwerius/authgoblue: invalid access token type")
+	errInvalidRefreshTokenType = errors.New("github.com/qwerius/authgoblue: invalid refresh token type")
 )
 
 func splitJWT(token string) (string, string, string, bool) {

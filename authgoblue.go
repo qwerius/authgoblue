@@ -1,20 +1,20 @@
 package authgoblue
 
 import (
-	"authgoblue/ctx"
-	"authgoblue/hooks"
-	"authgoblue/login"
-	"authgoblue/logout"
-	"authgoblue/middleware"
-	"authgoblue/password"
-	"authgoblue/permission"
-	"authgoblue/providers"
-	"authgoblue/refresh"
-	"authgoblue/revoke"
-	"authgoblue/role"
-	"authgoblue/session"
-	"authgoblue/storage"
-	"authgoblue/token"
+	"github.com/qwerius/authgoblue/ctx"
+	"github.com/qwerius/authgoblue/hooks"
+	"github.com/qwerius/authgoblue/login"
+	"github.com/qwerius/authgoblue/logout"
+	"github.com/qwerius/authgoblue/middleware"
+	"github.com/qwerius/authgoblue/password"
+	"github.com/qwerius/authgoblue/permission"
+	"github.com/qwerius/authgoblue/providers"
+	"github.com/qwerius/authgoblue/refresh"
+	"github.com/qwerius/authgoblue/revoke"
+	"github.com/qwerius/authgoblue/role"
+	"github.com/qwerius/authgoblue/session"
+	"github.com/qwerius/authgoblue/storage"
+	"github.com/qwerius/authgoblue/token"
 )
 
 type AuthGoBlue struct {

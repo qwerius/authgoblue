@@ -4,30 +4,30 @@ import "errors"
 
 var (
 	ErrInvalidIssuer = errors.New(
-		"authgoblue: invalid issuer",
+		"github.com/qwerius/authgoblue: invalid issuer",
 	)
 
 	ErrMissingExpiration = errors.New(
-		"authgoblue: missing expiration",
+		"github.com/qwerius/authgoblue: missing expiration",
 	)
 
 	ErrTokenExpired = errors.New(
-		"authgoblue: token expired",
+		"github.com/qwerius/authgoblue: token expired",
 	)
 
 	ErrInvalidAccessTokenType = errors.New(
-		"authgoblue: invalid access token type",
+		"github.com/qwerius/authgoblue: invalid access token type",
 	)
 
 	ErrInvalidRefreshTokenType = errors.New(
-		"authgoblue: invalid refresh token type",
+		"github.com/qwerius/authgoblue: invalid refresh token type",
 	)
 
 	ErrMissingTokenID = errors.New(
-		"authgoblue: missing token id",
+		"github.com/qwerius/authgoblue: missing token id",
 	)
 
 	ErrInvalidToken = errors.New(
-		"authgoblue: invalid token",
+		"github.com/qwerius/authgoblue: invalid token",
 	)
 )

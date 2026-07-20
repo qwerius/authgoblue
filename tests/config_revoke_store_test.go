@@ -3,8 +3,8 @@ package authgoblue_test
 import (
 	"testing"
 
-	"authgoblue"
-	"authgoblue/revoke"
+	"github.com/qwerius/authgoblue"
+	"github.com/qwerius/authgoblue/revoke"
 
 	"github.com/redis/go-redis/v9"
 )

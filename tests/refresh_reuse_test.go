@@ -3,9 +3,9 @@ package authgoblue_test
 import (
 	"testing"
 
-	"authgoblue"
-	"authgoblue/claims"
-	"authgoblue/refresh"
+	"github.com/qwerius/authgoblue"
+	"github.com/qwerius/authgoblue/claims"
+	"github.com/qwerius/authgoblue/refresh"
 
 	"github.com/stretchr/testify/require"
 )

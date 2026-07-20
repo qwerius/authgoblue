@@ -1,8 +1,9 @@
 package middleware
 
 import (
-	"authgoblue/claims"
 	"time"
+
+	"github.com/qwerius/authgoblue/claims"
 
 	"github.com/gofiber/fiber/v3"
 )

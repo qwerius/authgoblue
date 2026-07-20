@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	errTokenNotFound      = errors.New("authgoblue: token not found")
+	errTokenNotFound      = errors.New("github.com/qwerius/authgoblue: token not found")
 	errMissingHeader      = errors.New("missing header")
 	errInvalidAuthFormat  = errors.New("invalid authorization format")
 	errInvalidTokenPrefix = errors.New("invalid token prefix")

@@ -16,7 +16,7 @@ package main
 import (
     "time"
 
-    "authgoblue"
+    "github.com/qwerius/authgoblue"
 )
 
 func main() {
@@ -28,7 +28,7 @@ func main() {
         Header:          "Authorization",
         Prefix:          "Bearer",
         Cookie:          false,
-        CookieName:      "authgoblue_token",
+        CookieName:      "github.com/qwerius/authgoblue_token",
     })
 
     _ = agb

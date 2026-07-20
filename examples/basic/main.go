@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"authgoblue"
-	"authgoblue/login"
-	"authgoblue/providers"
-	"authgoblue/session"
+	"github.com/qwerius/authgoblue"
+	"github.com/qwerius/authgoblue/login"
+	"github.com/qwerius/authgoblue/providers"
+	"github.com/qwerius/authgoblue/session"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/redis/go-redis/v9"

@@ -6,7 +6,7 @@ import (
 	"github.com/gofiber/fiber/v3"
 )
 
-var errPermissionForbidden = errors.New("authgoblue: permission forbidden")
+var errPermissionForbidden = errors.New("github.com/qwerius/authgoblue: permission forbidden")
 
 func (s *Service) Get(
 	c fiber.Ctx,

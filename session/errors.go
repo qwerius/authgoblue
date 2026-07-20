@@ -4,14 +4,14 @@ import "errors"
 
 var (
 	ErrSessionNotFound = errors.New(
-		"authgoblue: session not found",
+		"github.com/qwerius/authgoblue: session not found",
 	)
 
 	ErrSessionRevoked = errors.New(
-		"authgoblue: session revoked",
+		"github.com/qwerius/authgoblue: session revoked",
 	)
 
 	ErrSessionExpired = errors.New(
-		"authgoblue: session expired",
+		"github.com/qwerius/authgoblue: session expired",
 	)
 )

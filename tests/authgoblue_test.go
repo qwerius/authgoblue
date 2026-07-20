@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"authgoblue"
-	"authgoblue/claims"
-	"authgoblue/session"
+	"github.com/qwerius/authgoblue"
+	"github.com/qwerius/authgoblue/claims"
+	"github.com/qwerius/authgoblue/session"
 
 	"github.com/gofiber/fiber/v3"
 )
@@ -24,7 +24,7 @@ func newTestAuthGoBlue() *authgoblue.AuthGoBlue {
 		Header:          "Authorization",
 		Prefix:          "Bearer",
 		Cookie:          false,
-		CookieName:      "authgoblue_token",
+		CookieName:      "github.com/qwerius/authgoblue_token",
 	})
 }
 
@@ -41,7 +41,7 @@ func TestNewAppliesDefaults(t *testing.T) {
 		t.Fatalf("expected default prefix Bearer, got %q", cfg.Prefix)
 	}
 
-	if cfg.CookieName != "authgoblue_token" {
+	if cfg.CookieName != "github.com/qwerius/authgoblue_token" {
 		t.Fatalf("expected default cookie name authgoblue_token, got %q", cfg.CookieName)
 	}
 
@@ -356,7 +356,7 @@ func TestAuthGoBlueUsesCustomSessionStore(t *testing.T) {
 		Header:          "Authorization",
 		Prefix:          "Bearer",
 		Cookie:          false,
-		CookieName:      "authgoblue_token",
+		CookieName:      "github.com/qwerius/authgoblue_token",
 		SessionStore:    customStore,
 	})
 
@@ -886,7 +886,7 @@ func TestDefaultConfigValues(t *testing.T) {
 		t.Fatal("expected cookie false")
 	}
 
-	if cfg.CookieName != "authgoblue_token" {
+	if cfg.CookieName != "github.com/qwerius/authgoblue_token" {
 		t.Fatalf(
 			"unexpected cookie name %s",
 			cfg.CookieName,

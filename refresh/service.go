@@ -1,11 +1,12 @@
 package refresh
 
 import (
-	"authgoblue/claims"
-	"authgoblue/revoke"
-	"authgoblue/session"
-	"authgoblue/token"
 	"time"
+
+	"github.com/qwerius/authgoblue/claims"
+	"github.com/qwerius/authgoblue/revoke"
+	"github.com/qwerius/authgoblue/session"
+	"github.com/qwerius/authgoblue/token"
 )
 
 type Service struct {

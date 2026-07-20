@@ -3,8 +3,8 @@ package authgoblue
 import (
 	"time"
 
-	"authgoblue/revoke"
-	"authgoblue/session"
+	"github.com/qwerius/authgoblue/revoke"
+	"github.com/qwerius/authgoblue/session"
 )
 
 type Config struct {
@@ -56,7 +56,7 @@ func DefaultConfig() Config {
 
 		Cookie: false,
 
-		CookieName: "authgoblue_token",
+		CookieName: "github.com/qwerius/authgoblue_token",
 
 		MaxSessions: 5,
 	}

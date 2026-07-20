@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"authgoblue/session"
+	"github.com/qwerius/authgoblue/session"
 )
 
 func TestSessionCreate(t *testing.T) {

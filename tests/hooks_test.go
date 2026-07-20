@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"authgoblue/hooks"
+	"github.com/qwerius/authgoblue/hooks"
 )
 
 func TestHookRegistry(t *testing.T) {

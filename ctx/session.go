@@ -1,17 +1,18 @@
 package ctx
 
 import (
-	"authgoblue/session"
 	"errors"
+
+	"github.com/qwerius/authgoblue/session"
 
 	"github.com/gofiber/fiber/v3"
 )
 
 var errSessionNotFound = errors.New(
-	"authgoblue: session not found",
+	"github.com/qwerius/authgoblue: session not found",
 )
 
-const sessionKey = "authgoblue_session"
+const sessionKey = "github.com/qwerius/authgoblue_session"
 
 func (s *Service) SetSession(
 	c fiber.Ctx,

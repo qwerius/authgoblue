@@ -4,22 +4,22 @@ import "errors"
 
 var (
 	ErrInvalidRefreshToken = errors.New(
-		"authgoblue: invalid refresh token",
+		"github.com/qwerius/authgoblue: invalid refresh token",
 	)
 
 	ErrRefreshTokenRevoked = errors.New(
-		"authgoblue: refresh token revoked",
+		"github.com/qwerius/authgoblue: refresh token revoked",
 	)
 
 	ErrRefreshTokenReuse = errors.New(
-		"authgoblue: refresh token reuse detected",
+		"github.com/qwerius/authgoblue: refresh token reuse detected",
 	)
 
 	ErrSessionServiceUnavailable = errors.New(
-		"authgoblue: session service unavailable",
+		"github.com/qwerius/authgoblue: session service unavailable",
 	)
 
 	ErrMissingSessionID = errors.New(
-		"authgoblue: missing session id",
+		"github.com/qwerius/authgoblue: missing session id",
 	)
 )
