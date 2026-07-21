@@ -104,3 +104,18 @@ func (c *Client) VerifyEmail() *verifyemail.Service {
 		c.provider,
 	)
 }
+
+func (c *Client) Session() *session.Service {
+
+	return c.session
+}
+
+func (c *Client) Hooks() *hooks.Registry {
+
+	return c.hooks
+}
+
+func (c *Client) MaxSessions() int {
+
+	return c.maxSessions
+}

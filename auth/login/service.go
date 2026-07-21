@@ -3,6 +3,7 @@ package login
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/qwerius/authgoblue/auth"
 	"github.com/qwerius/authgoblue/claims"
 	"github.com/qwerius/authgoblue/hooks"
@@ -125,24 +126,12 @@ func (s *Service) Execute(
 		return nil, ErrGenerateToken
 	}
 
-	result := &auth.AuthResult{
-
-		User: user,
-
-		Claims: authClaims,
-
-		AccessToken: accessToken,
-
-		RefreshToken: refreshToken,
-	}
-
 	if s.hooks != nil {
 
 		err = s.hooks.Fire(
 			ctx,
 			hooks.EventAfterLogin,
 			hooks.Payload{
-
 				UserID: user.ID,
 
 				SessionID: sess.ID,
@@ -159,11 +148,29 @@ func (s *Service) Execute(
 		)
 
 		if err != nil {
-			return nil, err
+			return nil, ErrHookExecution
 		}
 	}
 
+	userID, err := uuid.Parse(user.ID)
+
+	if err != nil {
+		return nil, ErrInvalidUserID
+	}
+
 	return &Response{
-		Result: result,
+		Result: &Result{
+			AccessToken: accessToken,
+
+			RefreshToken: refreshToken,
+
+			UserID: userID,
+
+			Email: user.Email,
+
+			Role: user.Role,
+
+			SessionID: sess.ID,
+		},
 	}, nil
 }
