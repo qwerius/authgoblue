@@ -2,7 +2,7 @@ package authgoblue
 
 import (
 	"github.com/qwerius/authgoblue/auth"
-	"github.com/qwerius/authgoblue/auth/client"
+	authclient "github.com/qwerius/authgoblue/auth/client"
 
 	"github.com/qwerius/authgoblue/ctx"
 	"github.com/qwerius/authgoblue/hooks"
@@ -37,7 +37,7 @@ type AuthGoBlue struct {
 	Refresh *refresh.Service
 
 	Auth   *auth.Service
-	Client *client.Client
+	Client *authclient.Client
 }
 
 func New(config Config) *AuthGoBlue {
@@ -76,11 +76,8 @@ func New(config Config) *AuthGoBlue {
 	var revokeStore revoke.Store
 
 	if config.RevokeStore != nil {
-
 		revokeStore = config.RevokeStore
-
 	} else {
-
 		revokeStore = revoke.NewMemoryStore()
 	}
 
@@ -95,11 +92,8 @@ func New(config Config) *AuthGoBlue {
 	var sessionStore session.Store
 
 	if config.SessionStore != nil {
-
 		sessionStore = config.SessionStore
-
 	} else {
-
 		sessionStore = session.NewMemoryStore()
 	}
 
@@ -133,9 +127,6 @@ func New(config Config) *AuthGoBlue {
 	// Storage
 	agb.Storage = storage.NewRegistry()
 
-	// Hooks
-	agb.Hooks = hooks.NewRegistry()
-
 	// Auth Layer
 	if config.Provider != nil {
 
@@ -143,10 +134,12 @@ func New(config Config) *AuthGoBlue {
 			config.Provider,
 		)
 
-		agb.Client = client.New(
+		agb.Client = authclient.New(
 			config.Provider,
 			agb.Token,
 			agb.Session,
+			agb.Revoke,
+			agb.Context,
 			agb.Hooks,
 			config.MaxSessions,
 		)

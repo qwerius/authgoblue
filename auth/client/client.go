@@ -10,8 +10,9 @@ import (
 	"github.com/qwerius/authgoblue/auth/register"
 	"github.com/qwerius/authgoblue/auth/resetpassword"
 	"github.com/qwerius/authgoblue/auth/verifyemail"
-
+	"github.com/qwerius/authgoblue/ctx"
 	"github.com/qwerius/authgoblue/hooks"
+	"github.com/qwerius/authgoblue/revoke"
 	"github.com/qwerius/authgoblue/session"
 	"github.com/qwerius/authgoblue/token"
 )
@@ -19,9 +20,10 @@ import (
 type Client struct {
 	provider auth.Provider
 
-	token *token.Service
-
+	token   *token.Service
 	session *session.Service
+	revoke  *revoke.Service
+	ctx     *ctx.Service
 
 	hooks *hooks.Registry
 
@@ -32,17 +34,20 @@ func New(
 	provider auth.Provider,
 	tokenService *token.Service,
 	sessionService *session.Service,
+	revokeService *revoke.Service,
+	ctxService *ctx.Service,
 	hookRegistry *hooks.Registry,
 	maxSessions int,
 ) *Client {
 
 	return &Client{
-
 		provider: provider,
 
-		token: tokenService,
-
+		token:   tokenService,
 		session: sessionService,
+		revoke:  revokeService,
+
+		ctx: ctxService,
 
 		hooks: hookRegistry,
 
@@ -65,6 +70,11 @@ func (c *Client) Logout() *logout.Service {
 
 	return logout.New(
 		c.provider,
+		c.token,
+		c.session,
+		c.revoke,
+		c.hooks,
+		c.ctx,
 	)
 }
 
