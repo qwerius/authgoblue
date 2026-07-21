@@ -1,39 +1,66 @@
 package session
 
 import (
+	"context"
 	"time"
 
 	"github.com/google/uuid"
+
+	"github.com/qwerius/authgoblue/hooks"
 )
 
 const DefaultSessionTTL = 7 * 24 * time.Hour
 
 type Service struct {
 	store Store
+
+	hooks *hooks.Registry
 }
 
 func NewService(
 	store Store,
+	hookRegistry *hooks.Registry,
 ) *Service {
 
 	return &Service{
 		store: store,
+
+		hooks: hookRegistry,
 	}
 }
 
-// Store mengembalikan store yang digunakan oleh Session Service.
+// Store mengembalikan store yang digunakan.
 func (s *Service) Store() Store {
+
 	return s.store
 }
 
-// Create membuat session baru tanpa informasi device.
+func (s *Service) fire(
+	ctx context.Context,
+	event hooks.Event,
+	payload hooks.Payload,
+) error {
+
+	if s.hooks == nil {
+		return nil
+	}
+
+	return s.hooks.Fire(
+		ctx,
+		event,
+		payload,
+	)
+}
+
+// Create membuat session baru tanpa device.
 func (s *Service) Create(
 	userID string,
 ) (Session, error) {
 
 	now := time.Now()
 
-	session := Session{
+	sess := Session{
+
 		ID: uuid.NewString(),
 
 		UserID: userID,
@@ -49,18 +76,35 @@ func (s *Service) Create(
 		CreatedAt: now,
 	}
 
-	err := s.store.Create(
-		session,
-	)
+	if err := s.store.Create(
+		sess,
+	); err != nil {
 
-	if err != nil {
-		return session, err
+		return sess, err
 	}
 
-	return session, nil
+	if err := s.fire(
+		context.Background(),
+		hooks.EventSessionCreated,
+		hooks.Payload{
+
+			UserID: sess.UserID,
+
+			SessionID: sess.ID,
+
+			Metadata: map[string]any{
+				"type": "session",
+			},
+		},
+	); err != nil {
+
+		return sess, err
+	}
+
+	return sess, nil
 }
 
-// CreateWithDevice membuat session baru dengan informasi device.
+// CreateWithDevice membuat session dengan informasi device.
 func (s *Service) CreateWithDevice(
 	userID string,
 	deviceID string,
@@ -72,7 +116,8 @@ func (s *Service) CreateWithDevice(
 
 	now := time.Now()
 
-	session := Session{
+	sess := Session{
+
 		ID: uuid.NewString(),
 
 		UserID: userID,
@@ -98,18 +143,39 @@ func (s *Service) CreateWithDevice(
 		CreatedAt: now,
 	}
 
-	err := s.store.Create(
-		session,
-	)
+	if err := s.store.Create(
+		sess,
+	); err != nil {
 
-	if err != nil {
-		return session, err
+		return sess, err
 	}
 
-	return session, nil
+	if err := s.fire(
+		context.Background(),
+		hooks.EventSessionCreated,
+		hooks.Payload{
+
+			UserID: sess.UserID,
+
+			SessionID: sess.ID,
+
+			Metadata: map[string]any{
+
+				"device_id": sess.DeviceID,
+
+				"device": sess.DeviceName,
+
+				"platform": sess.Platform,
+			},
+		},
+	); err != nil {
+
+		return sess, err
+	}
+
+	return sess, nil
 }
 
-// Get mengambil session berdasarkan ID.
 func (s *Service) Get(
 	id string,
 ) (Session, error) {
@@ -119,7 +185,6 @@ func (s *Service) Get(
 	)
 }
 
-// GetByUserID mengambil semua session milik user.
 func (s *Service) GetByUserID(
 	userID string,
 ) ([]Session, error) {
@@ -130,32 +195,64 @@ func (s *Service) GetByUserID(
 }
 
 // Revoke mencabut satu session.
-//
-// Session tetap ada, tetapi tidak dapat digunakan
-// untuk autentikasi berikutnya.
 func (s *Service) Revoke(
 	id string,
 ) error {
 
-	return s.store.Revoke(
+	if err := s.store.Revoke(
 		id,
+	); err != nil {
+
+		return err
+	}
+
+	return s.fire(
+		context.Background(),
+		hooks.EventSessionRevoked,
+		hooks.Payload{
+
+			SessionID: id,
+
+			Metadata: map[string]any{
+				"type": "single",
+			},
+		},
 	)
 }
 
-// RevokeAll mencabut seluruh session milik user.
+// RevokeAll mencabut seluruh session user.
 func (s *Service) RevokeAll(
 	userID string,
 ) error {
 
-	return s.store.RevokeAll(
-		userID,
-	)
+	sessions, err :=
+		s.store.GetByUserID(
+			userID,
+		)
+
+	if err != nil {
+		return err
+	}
+
+	for _, sess := range sessions {
+
+		if sess.Revoked {
+			continue
+		}
+
+		if err :=
+			s.Revoke(
+				sess.ID,
+			); err != nil {
+
+			return err
+		}
+	}
+
+	return nil
 }
 
-// CheckSession memastikan session masih valid.
-//
-// Digunakan oleh flow yang membutuhkan session aktif,
-// seperti refresh token rotation.
+// CheckSession memastikan session masih aktif.
 func (s *Service) CheckSession(
 	sessionID string,
 ) error {
@@ -170,27 +267,26 @@ func (s *Service) CheckSession(
 	}
 
 	if sess.Revoked {
+
 		return ErrSessionRevoked
 	}
 
 	if time.Now().After(
 		sess.ExpiresAt,
 	) {
+
 		return ErrSessionExpired
 	}
 
 	return nil
 }
 
-// Touch memperbarui waktu aktivitas terakhir session.
-//
-// Store.Create digunakan sebagai operasi save/upsert
-// sesuai kontrak Store.
+// Touch memperbarui aktivitas session.
 func (s *Service) Touch(
 	id string,
 ) error {
 
-	session, err :=
+	sess, err :=
 		s.store.Get(
 			id,
 		)
@@ -199,15 +295,15 @@ func (s *Service) Touch(
 		return err
 	}
 
-	session.LastSeenAt =
+	sess.LastSeenAt =
 		time.Now()
 
 	return s.store.Create(
-		session,
+		sess,
 	)
 }
 
-// DeleteExpired menghapus session yang sudah melewati masa aktif.
+// DeleteExpired menghapus session expired.
 func (s *Service) DeleteExpired(
 	now time.Time,
 ) error {
@@ -217,10 +313,7 @@ func (s *Service) DeleteExpired(
 	)
 }
 
-// EnforceLimit membatasi jumlah session aktif user.
-//
-// Jika jumlah session aktif melebihi batas,
-// session tertua akan dicabut.
+// EnforceLimit membatasi jumlah session aktif.
 func (s *Service) EnforceLimit(
 	userID string,
 	maxSessions int,
@@ -230,7 +323,7 @@ func (s *Service) EnforceLimit(
 		return nil
 	}
 
-	sessions, err :=
+	list, err :=
 		s.store.GetByUserID(
 			userID,
 		)
@@ -246,7 +339,7 @@ func (s *Service) EnforceLimit(
 		0,
 	)
 
-	for _, sess := range sessions {
+	for _, sess := range list {
 
 		if !sess.Revoked &&
 			now.Before(sess.ExpiresAt) {
@@ -259,10 +352,12 @@ func (s *Service) EnforceLimit(
 	}
 
 	if len(active) < maxSessions {
+
 		return nil
 	}
 
-	oldest := active[0]
+	oldest :=
+		active[0]
 
 	for _, sess := range active {
 
@@ -274,7 +369,7 @@ func (s *Service) EnforceLimit(
 		}
 	}
 
-	return s.store.Revoke(
+	return s.Revoke(
 		oldest.ID,
 	)
 }

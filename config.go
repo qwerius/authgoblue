@@ -3,6 +3,7 @@ package authgoblue
 import (
 	"time"
 
+	"github.com/qwerius/authgoblue/auth"
 	"github.com/qwerius/authgoblue/revoke"
 	"github.com/qwerius/authgoblue/session"
 )
@@ -28,6 +29,9 @@ type Config struct {
 	Cookie bool
 
 	CookieName string
+
+	// Auth provider
+	Provider auth.Provider
 
 	// Session storage
 	// default MemoryStore

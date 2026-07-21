@@ -10,6 +10,7 @@ import (
 
 	"github.com/qwerius/authgoblue"
 	"github.com/qwerius/authgoblue/claims"
+	"github.com/qwerius/authgoblue/hooks"
 
 	"github.com/qwerius/authgoblue/middleware"
 	"github.com/qwerius/authgoblue/session"
@@ -548,6 +549,7 @@ func BenchmarkMemorySessionCreate(
 	svc :=
 		session.NewService(
 			store,
+			hooks.NewRegistry(),
 		)
 
 	b.ResetTimer()
@@ -578,6 +580,7 @@ func BenchmarkMemorySessionGet(
 	svc :=
 		session.NewService(
 			store,
+			hooks.NewRegistry(),
 		)
 
 	s, err :=

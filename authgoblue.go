@@ -1,6 +1,9 @@
 package authgoblue
 
 import (
+	"github.com/qwerius/authgoblue/auth"
+	"github.com/qwerius/authgoblue/auth/client"
+
 	"github.com/qwerius/authgoblue/ctx"
 	"github.com/qwerius/authgoblue/hooks"
 
@@ -30,7 +33,11 @@ type AuthGoBlue struct {
 
 	Storage *storage.Registry
 	Hooks   *hooks.Registry
+
 	Refresh *refresh.Service
+
+	Auth   *auth.Service
+	Client *client.Client
 }
 
 func New(config Config) *AuthGoBlue {
@@ -81,6 +88,9 @@ func New(config Config) *AuthGoBlue {
 		revokeStore,
 	)
 
+	// Hooks
+	agb.Hooks = hooks.NewRegistry()
+
 	// Session
 	var sessionStore session.Store
 
@@ -95,6 +105,7 @@ func New(config Config) *AuthGoBlue {
 
 	agb.Session = session.NewService(
 		sessionStore,
+		agb.Hooks,
 	)
 
 	// Refresh
@@ -125,10 +136,25 @@ func New(config Config) *AuthGoBlue {
 	// Hooks
 	agb.Hooks = hooks.NewRegistry()
 
+	// Auth Layer
+	if config.Provider != nil {
+
+		agb.Auth = auth.New(
+			config.Provider,
+		)
+
+		agb.Client = client.New(
+			config.Provider,
+			agb.Token,
+			agb.Session,
+			agb.Hooks,
+			config.MaxSessions,
+		)
+	}
+
 	return agb
 }
 
 func (a *AuthGoBlue) Config() Config {
-
 	return a.config
 }

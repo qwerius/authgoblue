@@ -1,0 +1,106 @@
+package client
+
+import (
+	"github.com/qwerius/authgoblue/auth"
+
+	"github.com/qwerius/authgoblue/auth/forgotpassword"
+	"github.com/qwerius/authgoblue/auth/login"
+	"github.com/qwerius/authgoblue/auth/logout"
+	"github.com/qwerius/authgoblue/auth/refresh"
+	"github.com/qwerius/authgoblue/auth/register"
+	"github.com/qwerius/authgoblue/auth/resetpassword"
+	"github.com/qwerius/authgoblue/auth/verifyemail"
+
+	"github.com/qwerius/authgoblue/hooks"
+	"github.com/qwerius/authgoblue/session"
+	"github.com/qwerius/authgoblue/token"
+)
+
+type Client struct {
+	provider auth.Provider
+
+	token *token.Service
+
+	session *session.Service
+
+	hooks *hooks.Registry
+
+	maxSessions int
+}
+
+func New(
+	provider auth.Provider,
+	tokenService *token.Service,
+	sessionService *session.Service,
+	hookRegistry *hooks.Registry,
+	maxSessions int,
+) *Client {
+
+	return &Client{
+
+		provider: provider,
+
+		token: tokenService,
+
+		session: sessionService,
+
+		hooks: hookRegistry,
+
+		maxSessions: maxSessions,
+	}
+}
+
+func (c *Client) Login() *login.Service {
+
+	return login.New(
+		c.provider,
+		c.token,
+		c.session,
+		c.hooks,
+		c.maxSessions,
+	)
+}
+
+func (c *Client) Logout() *logout.Service {
+
+	return logout.New(
+		c.provider,
+	)
+}
+
+func (c *Client) Refresh() *refresh.Service {
+
+	return refresh.New(
+		c.token,
+		c.session,
+		c.hooks,
+	)
+}
+
+func (c *Client) Register() *register.Service {
+
+	return register.New(
+		c.provider,
+	)
+}
+
+func (c *Client) ForgotPassword() *forgotpassword.Service {
+
+	return forgotpassword.New(
+		c.provider,
+	)
+}
+
+func (c *Client) ResetPassword() *resetpassword.Service {
+
+	return resetpassword.New(
+		c.provider,
+	)
+}
+
+func (c *Client) VerifyEmail() *verifyemail.Service {
+
+	return verifyemail.New(
+		c.provider,
+	)
+}

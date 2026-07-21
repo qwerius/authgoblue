@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/qwerius/authgoblue/hooks"
 	"github.com/qwerius/authgoblue/session"
 )
 
@@ -13,6 +14,7 @@ func TestSessionCreate(t *testing.T) {
 
 	service := session.NewService(
 		store,
+		hooks.NewRegistry(),
 	)
 
 	s, err := service.Create(
@@ -38,6 +40,7 @@ func TestSessionGet(t *testing.T) {
 
 	service := session.NewService(
 		store,
+		hooks.NewRegistry(),
 	)
 
 	s, err := service.Create(
@@ -67,6 +70,7 @@ func TestSessionRevoke(t *testing.T) {
 
 	service := session.NewService(
 		store,
+		hooks.NewRegistry(),
 	)
 
 	s, err := service.Create(
@@ -105,6 +109,7 @@ func TestSessionDeleteExpired(
 
 	service := session.NewService(
 		store,
+		hooks.NewRegistry(),
 	)
 
 	expired := session.Session{

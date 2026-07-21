@@ -10,6 +10,7 @@ import (
 
 	"github.com/qwerius/authgoblue"
 	"github.com/qwerius/authgoblue/claims"
+	"github.com/qwerius/authgoblue/hooks"
 	"github.com/qwerius/authgoblue/session"
 
 	"github.com/gofiber/fiber/v3"
@@ -621,6 +622,7 @@ func TestSessionMultipleDevice(t *testing.T) {
 
 	service := session.NewService(
 		store,
+		hooks.NewRegistry(),
 	)
 
 	s1, err := service.CreateWithDevice(
@@ -690,6 +692,7 @@ func TestSessionLogoutCurrentDevice(t *testing.T) {
 
 	service := session.NewService(
 		store,
+		hooks.NewRegistry(),
 	)
 
 	sess, err :=
@@ -738,6 +741,7 @@ func TestSessionLogoutAllDevices(t *testing.T) {
 
 	service := session.NewService(
 		store,
+		hooks.NewRegistry(),
 	)
 
 	_, err :=
@@ -801,7 +805,7 @@ func TestSessionLimitRevokesOldestSession(t *testing.T) {
 
 	store := session.NewMemoryStore()
 
-	service := session.NewService(store)
+	service := session.NewService(store, hooks.NewRegistry())
 
 	s1, _ := service.CreateWithDevice(
 		"user-1",
