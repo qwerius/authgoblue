@@ -80,7 +80,7 @@ func (s *Service) extractCookieToken(
 ) (string, error) {
 
 	value := c.Cookies(
-		s.cookieName,
+		s.accessCookieName,
 	)
 
 	if value == "" {

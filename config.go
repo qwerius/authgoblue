@@ -28,7 +28,8 @@ type Config struct {
 
 	Cookie bool
 
-	CookieName string
+	AccessCookieName  string
+	RefreshCookieName string
 
 	// Auth provider
 	Provider auth.Provider
@@ -60,7 +61,9 @@ func DefaultConfig() Config {
 
 		Cookie: false,
 
-		CookieName: "github.com/qwerius/authgoblue_token",
+		AccessCookieName: "access_token",
+
+		RefreshCookieName: "refresh_token",
 
 		MaxSessions: 5,
 	}

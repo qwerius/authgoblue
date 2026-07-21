@@ -73,7 +73,7 @@ func (s *Service) RequireRefresh() fiber.Handler {
 
 		refreshToken :=
 			c.Cookies(
-				s.cookieName,
+				s.refreshCookieName,
 			)
 
 		if refreshToken == "" {

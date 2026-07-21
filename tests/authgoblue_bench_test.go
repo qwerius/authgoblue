@@ -22,14 +22,14 @@ import (
 
 func newBenchmarkAuthGoBlue() *authgoblue.AuthGoBlue {
 	return authgoblue.New(authgoblue.Config{
-		Secret:          "benchmark-secret-key",
-		Issuer:          "benchmark-service",
-		AccessTokenTTL:  15 * time.Minute,
-		RefreshTokenTTL: 7 * 24 * time.Hour,
-		Header:          "Authorization",
-		Prefix:          "Bearer",
-		Cookie:          false,
-		CookieName:      "github.com/qwerius/authgoblue_token",
+		Secret:           "benchmark-secret-key",
+		Issuer:           "benchmark-service",
+		AccessTokenTTL:   15 * time.Minute,
+		RefreshTokenTTL:  7 * 24 * time.Hour,
+		Header:           "Authorization",
+		Prefix:           "Bearer",
+		Cookie:           false,
+		AccessCookieName: "github.com/qwerius/authgoblue_token",
 	})
 }
 

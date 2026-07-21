@@ -24,9 +24,14 @@ func applyDefaults(config Config) Config {
 			defaults.Prefix
 	}
 
-	if config.CookieName == "" {
-		config.CookieName =
-			defaults.CookieName
+	if config.AccessCookieName == "" {
+		config.AccessCookieName =
+			defaults.AccessCookieName
+	}
+
+	if config.RefreshCookieName == "" {
+		config.RefreshCookieName =
+			defaults.RefreshCookieName
 	}
 
 	if config.MaxSessions == 0 {

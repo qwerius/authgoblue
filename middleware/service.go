@@ -17,10 +17,12 @@ type Service struct {
 	revoke     *revoke.Service
 	session    *session.Service
 
-	header     string
-	prefix     string
-	cookie     bool
-	cookieName string
+	header           string
+	prefix           string
+	cookie           bool
+	accessCookieName string
+
+	refreshCookieName string
 }
 
 func NewService(
@@ -34,7 +36,8 @@ func NewService(
 	header string,
 	prefix string,
 	cookie bool,
-	cookieName string,
+	accessCookieName string,
+	refreshCookieName string,
 ) *Service {
 
 	return &Service{
@@ -57,6 +60,8 @@ func NewService(
 
 		cookie: cookie,
 
-		cookieName: cookieName,
+		accessCookieName: accessCookieName,
+
+		refreshCookieName: refreshCookieName,
 	}
 }

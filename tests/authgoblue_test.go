@@ -18,14 +18,14 @@ import (
 
 func newTestAuthGoBlue() *authgoblue.AuthGoBlue {
 	return authgoblue.New(authgoblue.Config{
-		Secret:          "test-secret-key",
-		Issuer:          "test-issuer",
-		AccessTokenTTL:  15 * time.Minute,
-		RefreshTokenTTL: 7 * 24 * time.Hour,
-		Header:          "Authorization",
-		Prefix:          "Bearer",
-		Cookie:          false,
-		CookieName:      "github.com/qwerius/authgoblue_token",
+		Secret:           "test-secret-key",
+		Issuer:           "test-issuer",
+		AccessTokenTTL:   15 * time.Minute,
+		RefreshTokenTTL:  7 * 24 * time.Hour,
+		Header:           "Authorization",
+		Prefix:           "Bearer",
+		Cookie:           false,
+		AccessCookieName: "github.com/qwerius/authgoblue_token",
 	})
 }
 
@@ -42,8 +42,8 @@ func TestNewAppliesDefaults(t *testing.T) {
 		t.Fatalf("expected default prefix Bearer, got %q", cfg.Prefix)
 	}
 
-	if cfg.CookieName != "github.com/qwerius/authgoblue_token" {
-		t.Fatalf("expected default cookie name authgoblue_token, got %q", cfg.CookieName)
+	if cfg.AccessCookieName != "github.com/qwerius/authgoblue_token" {
+		t.Fatalf("expected default cookie name authgoblue_token, got %q", cfg.AccessCookieName)
 	}
 
 	if cfg.AccessTokenTTL <= 0 {
@@ -350,15 +350,15 @@ func TestAuthGoBlueUsesCustomSessionStore(t *testing.T) {
 	customStore := session.NewMemoryStore()
 
 	agb := authgoblue.New(authgoblue.Config{
-		Secret:          "test-secret-key",
-		Issuer:          "test-issuer",
-		AccessTokenTTL:  15 * time.Minute,
-		RefreshTokenTTL: 7 * 24 * time.Hour,
-		Header:          "Authorization",
-		Prefix:          "Bearer",
-		Cookie:          false,
-		CookieName:      "github.com/qwerius/authgoblue_token",
-		SessionStore:    customStore,
+		Secret:           "test-secret-key",
+		Issuer:           "test-issuer",
+		AccessTokenTTL:   15 * time.Minute,
+		RefreshTokenTTL:  7 * 24 * time.Hour,
+		Header:           "Authorization",
+		Prefix:           "Bearer",
+		Cookie:           false,
+		AccessCookieName: "github.com/qwerius/authgoblue_token",
+		SessionStore:     customStore,
 	})
 
 	if agb.Session == nil {
@@ -890,10 +890,10 @@ func TestDefaultConfigValues(t *testing.T) {
 		t.Fatal("expected cookie false")
 	}
 
-	if cfg.CookieName != "github.com/qwerius/authgoblue_token" {
+	if cfg.AccessCookieName != "github.com/qwerius/authgoblue_token" {
 		t.Fatalf(
 			"unexpected cookie name %s",
-			cfg.CookieName,
+			cfg.AccessCookieName,
 		)
 	}
 
