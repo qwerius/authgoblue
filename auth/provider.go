@@ -5,7 +5,7 @@ import "context"
 type Authenticator interface {
 	Authenticate(
 		ctx context.Context,
-		username string,
+		email string,
 		password string,
 	) (*User, error)
 }

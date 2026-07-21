@@ -51,7 +51,7 @@ func TestRefreshServiceRotation(t *testing.T) {
 		loginService.Execute(
 			context.Background(),
 			login.Request{
-				Username: "user@test.com",
+				Email:    "user@test.com",
 				Password: "password",
 			},
 		)

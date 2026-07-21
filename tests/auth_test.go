@@ -112,7 +112,7 @@ func TestAuthClientLogin(t *testing.T) {
 		Execute(
 			context.Background(),
 			login.Request{
-				Username: "admin",
+				Email:    "a@gmail.com",
 				Password: "password",
 			},
 		)

@@ -51,7 +51,7 @@ func (s *Service) Execute(
 
 	user, err := s.provider.Authenticate(
 		ctx,
-		req.Username,
+		req.Email,
 		req.Password,
 	)
 
