@@ -1,15 +1,12 @@
 package login
 
-import (
-	"github.com/google/uuid"
-	"github.com/qwerius/authgoblue/auth"
-)
+import "github.com/google/uuid"
 
 type Response struct {
-	Result *auth.AuthResult
+	Result *Result
 }
 
-type LoginResult struct {
+type Result struct {
 	AccessToken string
 
 	RefreshToken string
@@ -19,28 +16,6 @@ type LoginResult struct {
 	Email string
 
 	Role string
-}
 
-func (r *Response) Output() (*LoginResult, error) {
-
-	userID, err := uuid.Parse(
-		r.Result.Claims.UserID,
-	)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &LoginResult{
-
-		AccessToken: r.Result.AccessToken,
-
-		RefreshToken: r.Result.RefreshToken,
-
-		UserID: userID,
-
-		Email: r.Result.Claims.Email,
-
-		Role: r.Result.Claims.Role,
-	}, nil
+	SessionID string
 }

@@ -13,14 +13,14 @@ type mockProvider struct{}
 
 func (m *mockProvider) Authenticate(
 	ctx context.Context,
-	username string,
+	email string,
 	password string,
 ) (*auth.User, error) {
 
 	return &auth.User{
-		ID:       "1",
-		Username: username,
-		Email:    "test@example.com",
+		ID:       "00000000-0000-0000-0000-000000000001",
+		Username: "admin",
+		Email:    email,
 		Role:     "guest",
 	}, nil
 }
@@ -31,7 +31,7 @@ func (m *mockProvider) Register(
 ) (*auth.User, error) {
 
 	return &auth.User{
-		ID: "1",
+		ID: "00000000-0000-0000-0000-000000000001",
 	}, nil
 }
 
@@ -60,7 +60,6 @@ func (m *mockProvider) SaveResetToken(
 	userID string,
 	token string,
 ) error {
-
 	return nil
 }
 
@@ -70,7 +69,7 @@ func (m *mockProvider) ValidateResetToken(
 ) (*auth.User, error) {
 
 	return &auth.User{
-		ID: "1",
+		ID: "00000000-0000-0000-0000-000000000001",
 	}, nil
 }
 
@@ -79,7 +78,6 @@ func (m *mockProvider) UpdatePassword(
 	userID string,
 	hashedPassword string,
 ) error {
-
 	return nil
 }
 
@@ -87,7 +85,6 @@ func (m *mockProvider) VerifyEmail(
 	ctx context.Context,
 	token string,
 ) error {
-
 	return nil
 }
 
@@ -121,7 +118,15 @@ func TestAuthClientLogin(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if result.Result.User.Username != "admin" {
-		t.Fatal("invalid user")
+	if result.Result.Email != "a@gmail.com" {
+		t.Fatal("invalid email")
+	}
+
+	if result.Result.Role != "guest" {
+		t.Fatal("invalid role")
+	}
+
+	if result.Result.UserID.String() == "" {
+		t.Fatal("invalid user id")
 	}
 }

@@ -37,7 +37,6 @@ func TestRefreshServiceRotation(t *testing.T) {
 	provider :=
 		&mockProvider{}
 
-	// Login membuat session pertama
 	loginService :=
 		login.New(
 			provider,
@@ -63,11 +62,8 @@ func TestRefreshServiceRotation(t *testing.T) {
 	oldRefresh :=
 		loginResult.Result.RefreshToken
 
-	oldClaims :=
-		loginResult.Result.Claims
-
 	oldSessionID :=
-		oldClaims.SessionID
+		loginResult.Result.SessionID
 
 	refreshService :=
 		refresh.New(
@@ -109,8 +105,6 @@ func TestRefreshServiceRotation(t *testing.T) {
 		)
 	}
 
-	// session lama harus revoked
-
 	oldSession, err :=
 		sessionService.Get(
 			oldSessionID,
@@ -126,8 +120,6 @@ func TestRefreshServiceRotation(t *testing.T) {
 			"expected old session revoked",
 		)
 	}
-
-	// refresh token baru harus memakai session baru
 
 	newClaims, err :=
 		tokenService.ParseRefreshToken(
@@ -151,5 +143,4 @@ func TestRefreshServiceRotation(t *testing.T) {
 			"expected rotated session id",
 		)
 	}
-
 }

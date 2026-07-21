@@ -16,10 +16,18 @@ var (
 	)
 
 	ErrCreateSession = errors.New(
-		"authgoblue: failed create session",
+		"authgoblue: create session failed",
 	)
 
 	ErrGenerateToken = errors.New(
-		"authgoblue: failed generate token",
+		"authgoblue: generate token failed",
+	)
+
+	ErrHookExecution = errors.New(
+		"authgoblue: hook execution failed",
+	)
+
+	ErrInvalidUserID = errors.New(
+		"authgoblue: invalid user id",
 	)
 )
