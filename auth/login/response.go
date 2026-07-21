@@ -10,22 +10,25 @@ type Response struct {
 }
 
 type LoginResult struct {
-	AccessToken  string
+	AccessToken string
+
 	RefreshToken string
 
 	UserID uuid.UUID
-	Email  string
-	Role   string
+
+	Email string
+
+	Role string
 }
 
-func (r *Response) Output() *LoginResult {
+func (r *Response) Output() (*LoginResult, error) {
 
 	userID, err := uuid.Parse(
 		r.Result.Claims.UserID,
 	)
 
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	return &LoginResult{
@@ -39,5 +42,5 @@ func (r *Response) Output() *LoginResult {
 		Email: r.Result.Claims.Email,
 
 		Role: r.Result.Claims.Role,
-	}
+	}, nil
 }
