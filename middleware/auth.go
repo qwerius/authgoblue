@@ -57,7 +57,50 @@ func (s *Service) RequireAuth_With(
 			}
 		}
 
-		// semua lolos
+		s.context.SetClaims(
+			c,
+			authClaims,
+		)
+
+		return c.Next()
+	}
+}
+
+// RequireRefresh memastikan refresh token valid.
+func (s *Service) RequireRefresh() fiber.Handler {
+
+	return func(c fiber.Ctx) error {
+
+		refreshToken :=
+			c.Cookies(
+				s.cookieName,
+			)
+
+		if refreshToken == "" {
+
+			return fiber.ErrUnauthorized
+		}
+
+		authClaims, err :=
+			s.token.ParseRefreshToken(
+				refreshToken,
+			)
+
+		if err != nil {
+
+			return fiber.ErrUnauthorized
+		}
+
+		err =
+			s.token.ValidateRefreshToken(
+				authClaims,
+			)
+
+		if err != nil {
+
+			return fiber.ErrUnauthorized
+		}
+
 		s.context.SetClaims(
 			c,
 			authClaims,
