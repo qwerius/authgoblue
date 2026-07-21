@@ -890,7 +890,7 @@ func TestDefaultConfigValues(t *testing.T) {
 		t.Fatal("expected cookie false")
 	}
 
-	if cfg.AccessCookieName != "github.com/qwerius/authgoblue_token" {
+	if cfg.AccessCookieName != "access_token" {
 		t.Fatalf(
 			"unexpected cookie name %s",
 			cfg.AccessCookieName,

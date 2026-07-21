@@ -41,11 +41,14 @@ func New(
 ) *Client {
 
 	return &Client{
+
 		provider: provider,
 
-		token:   tokenService,
+		token: tokenService,
+
 		session: sessionService,
-		revoke:  revokeService,
+
+		revoke: revokeService,
 
 		ctx: ctxService,
 
@@ -82,6 +85,7 @@ func (c *Client) Refresh() *refresh.Service {
 
 	return refresh.New(
 		c.token,
+		c.revoke,
 		c.session,
 		c.hooks,
 	)

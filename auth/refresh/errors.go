@@ -10,4 +10,16 @@ var (
 	ErrRefreshTokenExpired = errors.New(
 		"authgoblue: refresh token expired",
 	)
+
+	ErrMissingSessionID = errors.New(
+		"authgoblue: missing session id",
+	)
+
+	ErrMissingTokenID = errors.New(
+		"authgoblue: missing token id",
+	)
+
+	ErrRefreshTokenReuse = errors.New(
+		"authgoblue: refresh token reuse detected",
+	)
 )

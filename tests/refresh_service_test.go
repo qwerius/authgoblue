@@ -8,6 +8,7 @@ import (
 	"github.com/qwerius/authgoblue/auth/login"
 	"github.com/qwerius/authgoblue/auth/refresh"
 	"github.com/qwerius/authgoblue/hooks"
+	"github.com/qwerius/authgoblue/revoke"
 	"github.com/qwerius/authgoblue/session"
 	"github.com/qwerius/authgoblue/token"
 )
@@ -32,6 +33,14 @@ func TestRefreshServiceRotation(t *testing.T) {
 		session.NewService(
 			sessionStore,
 			hookRegistry,
+		)
+
+	revokeStore :=
+		revoke.NewMemoryStore()
+
+	revokeService :=
+		revoke.NewService(
+			revokeStore,
 		)
 
 	provider :=
@@ -68,6 +77,7 @@ func TestRefreshServiceRotation(t *testing.T) {
 	refreshService :=
 		refresh.New(
 			tokenService,
+			revokeService,
 			sessionService,
 			hookRegistry,
 		)
@@ -105,19 +115,51 @@ func TestRefreshServiceRotation(t *testing.T) {
 		)
 	}
 
-	oldSession, err :=
+	// session lama tetap aktif
+
+	currentSession, err :=
 		sessionService.Get(
 			oldSessionID,
 		)
 
 	if err != nil {
+
 		t.Fatal(err)
 	}
 
-	if !oldSession.Revoked {
+	if currentSession.Revoked {
 
 		t.Fatal(
-			"expected old session revoked",
+			"expected session still active after refresh",
+		)
+	}
+
+	oldClaims, err :=
+		tokenService.ParseRefreshToken(
+			oldRefresh,
+		)
+
+	if err != nil {
+
+		t.Fatal(err)
+	}
+
+	// refresh token lama harus revoked
+
+	revoked, err :=
+		revokeService.IsRevoked(
+			oldClaims.TokenID,
+		)
+
+	if err != nil {
+
+		t.Fatal(err)
+	}
+
+	if !revoked {
+
+		t.Fatal(
+			"expected old refresh token revoked",
 		)
 	}
 
@@ -127,20 +169,14 @@ func TestRefreshServiceRotation(t *testing.T) {
 		)
 
 	if err != nil {
+
 		t.Fatal(err)
 	}
 
-	if newClaims.SessionID == "" {
+	if newClaims.SessionID != oldSessionID {
 
 		t.Fatal(
-			"expected new session id",
-		)
-	}
-
-	if newClaims.SessionID == oldSessionID {
-
-		t.Fatal(
-			"expected rotated session id",
+			"expected same session id after rotation",
 		)
 	}
 }
