@@ -14,4 +14,12 @@ var (
 	ErrEmailNotVerified = errors.New(
 		"authgoblue: email not verified",
 	)
+
+	ErrCreateSession = errors.New(
+		"authgoblue: failed create session",
+	)
+
+	ErrGenerateToken = errors.New(
+		"authgoblue: failed generate token",
+	)
 )

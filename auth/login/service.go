@@ -31,15 +31,10 @@ func New(
 ) *Service {
 
 	return &Service{
-
-		provider: provider,
-
-		token: tokenService,
-
-		session: sessionService,
-
-		hooks: hookRegistry,
-
+		provider:    provider,
+		token:       tokenService,
+		session:     sessionService,
+		hooks:       hookRegistry,
 		maxSessions: maxSessions,
 	}
 }
@@ -56,7 +51,7 @@ func (s *Service) Execute(
 	)
 
 	if err != nil {
-		return nil, err
+		return nil, ErrInvalidCredentials
 	}
 
 	if user.Role == "" {
@@ -88,10 +83,9 @@ func (s *Service) Execute(
 	}
 
 	if err != nil {
-		return nil, err
+		return nil, ErrCreateSession
 	}
 
-	// Limit active sessions
 	err = s.session.EnforceLimit(
 		user.ID,
 		s.maxSessions,
@@ -102,7 +96,6 @@ func (s *Service) Execute(
 	}
 
 	authClaims := claims.Claims{
-
 		UserID: user.ID,
 
 		Username: user.Username,
@@ -121,7 +114,7 @@ func (s *Service) Execute(
 	)
 
 	if err != nil {
-		return nil, err
+		return nil, ErrGenerateToken
 	}
 
 	refreshToken, err := s.token.GenerateRefreshToken(
@@ -129,7 +122,7 @@ func (s *Service) Execute(
 	)
 
 	if err != nil {
-		return nil, err
+		return nil, ErrGenerateToken
 	}
 
 	result := &auth.AuthResult{
