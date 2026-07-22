@@ -57,24 +57,8 @@ func (s *Service) Rotate(
 	}
 
 	if oldClaims.SessionID == "" {
+
 		return "", "", ErrMissingSessionID
-	}
-
-	// cek refresh token reuse
-	if s.revoke != nil {
-
-		revoked, err :=
-			s.revoke.IsRevoked(
-				oldClaims.TokenID,
-			)
-
-		if err != nil {
-			return "", "", err
-		}
-
-		if revoked {
-			return "", "", ErrRefreshTokenReuse
-		}
 	}
 
 	// cek session masih aktif
@@ -88,14 +72,16 @@ func (s *Service) Rotate(
 	}
 
 	if currentSession.Revoked {
+
 		return "", "", session.ErrSessionRevoked
 	}
 
-	// revoke refresh token lama
+	// atomic consume refresh token
+	// hanya satu request yang boleh memakai token ini
 	if s.revoke != nil {
 
-		err =
-			s.revoke.Revoke(
+		ok, err :=
+			s.revoke.Consume(
 				oldClaims.TokenID,
 				time.Unix(
 					oldClaims.ExpiresAt,
@@ -106,6 +92,11 @@ func (s *Service) Rotate(
 		if err != nil {
 			return "", "", err
 		}
+
+		if !ok {
+
+			return "", "", ErrRefreshTokenReuse
+		}
 	}
 
 	// update aktivitas session
@@ -115,6 +106,7 @@ func (s *Service) Rotate(
 		)
 
 	if err != nil {
+
 		return "", "", err
 	}
 
@@ -139,6 +131,7 @@ func (s *Service) Rotate(
 		)
 
 	if err != nil {
+
 		return "", "", err
 	}
 
@@ -148,6 +141,7 @@ func (s *Service) Rotate(
 		)
 
 	if err != nil {
+
 		return "", "", err
 	}
 

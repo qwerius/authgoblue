@@ -11,4 +11,9 @@ type Store interface {
 	IsRevoked(
 		tokenID string,
 	) (bool, error)
+
+	Consume(
+		tokenID string,
+		expireAt time.Time,
+	) (bool, error)
 }

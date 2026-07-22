@@ -56,7 +56,7 @@ func (s *Service) Parse(tokenString string) (claims.Claims, error) {
 
 	// header
 	// header validation
-	if header != jwtHeader {
+	if header != jwtHS256HeaderSegment {
 		return c, errUnexpectedSigningMethod
 	}
 

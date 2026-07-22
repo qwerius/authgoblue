@@ -34,3 +34,14 @@ func (s *Service) IsRevoked(
 		tokenID,
 	)
 }
+
+func (s *Service) Consume(
+	tokenID string,
+	expireAt time.Time,
+) (bool, error) {
+
+	return s.store.Consume(
+		tokenID,
+		expireAt,
+	)
+}

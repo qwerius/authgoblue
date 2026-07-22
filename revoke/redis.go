@@ -73,3 +73,32 @@ func (s *RedisStore) IsRevoked(
 
 	return count > 0, nil
 }
+
+func (s *RedisStore) Consume(
+	tokenID string,
+	expireAt time.Time,
+) (bool, error) {
+
+	ttl :=
+		time.Until(
+			expireAt,
+		)
+
+	if ttl <= 0 {
+		return false, nil
+	}
+
+	ok, err :=
+		s.client.SetNX(
+			context.Background(),
+			s.key(tokenID),
+			"1",
+			ttl,
+		).Result()
+
+	if err != nil {
+		return false, err
+	}
+
+	return ok, nil
+}

@@ -64,3 +64,28 @@ func (s *MemoryStore) IsRevoked(
 
 	return true, nil
 }
+
+func (s *MemoryStore) Consume(
+	tokenID string,
+	expireAt time.Time,
+) (bool, error) {
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if old, exists := s.data[tokenID]; exists {
+
+		if time.Now().Before(old) {
+			return false, nil
+		}
+
+		delete(
+			s.data,
+			tokenID,
+		)
+	}
+
+	s.data[tokenID] = expireAt
+
+	return true, nil
+}
