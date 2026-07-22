@@ -62,6 +62,15 @@ func (s *Service) Execute(
 
 	now := time.Now().Unix()
 
+	println(
+		"DEBUG REFRESH",
+		"now=", now,
+		"accessAt=", accessExpiresAt,
+		"accessIn=", accessExpiresAt-now,
+		"refreshAt=", refreshExpiresAt,
+		"refreshIn=", refreshExpiresAt-now,
+	)
+
 	return &Response{
 
 		AccessToken: accessToken,
