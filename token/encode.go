@@ -8,7 +8,7 @@ import (
 	"github.com/qwerius/authgoblue/claims"
 )
 
-const jwtHeader = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+const jwtHS256HeaderSegment = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
 
 var errMarshalClaims = errors.New("github.com/qwerius/authgoblue: failed to marshal claims")
 
@@ -27,7 +27,7 @@ func (s *Service) encodeJWT(
 	)
 
 	unsignedToken :=
-		jwtHeader + "." + payloadSegment
+		jwtHS256HeaderSegment + "." + payloadSegment
 
 	signature := signHS256(
 		[]byte(unsignedToken),
@@ -41,14 +41,14 @@ func (s *Service) encodeJWT(
 	var builder strings.Builder
 
 	builder.Grow(
-		len(jwtHeader) +
+		len(jwtHS256HeaderSegment) +
 			1 +
 			len(payloadSegment) +
 			1 +
 			len(signatureSegment),
 	)
 
-	builder.WriteString(jwtHeader)
+	builder.WriteString(jwtHS256HeaderSegment)
 	builder.WriteByte('.')
 	builder.WriteString(payloadSegment)
 	builder.WriteByte('.')

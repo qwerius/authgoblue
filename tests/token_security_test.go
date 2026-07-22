@@ -9,12 +9,21 @@ import (
 )
 
 func newSecurityTestAuthGoBlue() *authgoblue.AuthGoBlue {
-	return authgoblue.New(authgoblue.Config{
-		Secret:          "security-secret-key",
-		Issuer:          "security-service",
-		AccessTokenTTL:  15 * time.Minute,
-		RefreshTokenTTL: 7 * 24 * time.Hour,
-	})
+
+	agb, err := authgoblue.New(
+		authgoblue.Config{
+			Secret:          "security-secret-key",
+			Issuer:          "security-service",
+			AccessTokenTTL:  15 * time.Minute,
+			RefreshTokenTTL: 7 * 24 * time.Hour,
+		},
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return agb
 }
 
 func securityClaims() claims.Claims {
@@ -44,19 +53,31 @@ func TestInvalidAccessTokenRejected(t *testing.T) {
 // Secret berbeda harus ditolak
 func TestAccessTokenRejectedWithDifferentSecret(t *testing.T) {
 
-	agb1 := authgoblue.New(authgoblue.Config{
-		Secret:          "secret-one",
-		Issuer:          "service",
-		AccessTokenTTL:  15 * time.Minute,
-		RefreshTokenTTL: 7 * 24 * time.Hour,
-	})
+	agb1, err := authgoblue.New(
+		authgoblue.Config{
+			Secret:          "secret-one",
+			Issuer:          "service",
+			AccessTokenTTL:  15 * time.Minute,
+			RefreshTokenTTL: 7 * 24 * time.Hour,
+		},
+	)
 
-	agb2 := authgoblue.New(authgoblue.Config{
-		Secret:          "secret-two",
-		Issuer:          "service",
-		AccessTokenTTL:  15 * time.Minute,
-		RefreshTokenTTL: 7 * 24 * time.Hour,
-	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	agb2, err := authgoblue.New(
+		authgoblue.Config{
+			Secret:          "secret-two",
+			Issuer:          "service",
+			AccessTokenTTL:  15 * time.Minute,
+			RefreshTokenTTL: 7 * 24 * time.Hour,
+		},
+	)
+
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	token, err :=
 		agb1.Token.GenerateAccessToken(
@@ -78,19 +99,31 @@ func TestAccessTokenRejectedWithDifferentSecret(t *testing.T) {
 // Issuer berbeda harus ditolak saat validation
 func TestAccessTokenRejectedWithDifferentIssuer(t *testing.T) {
 
-	agb1 := authgoblue.New(authgoblue.Config{
-		Secret:          "same-secret",
-		Issuer:          "issuer-one",
-		AccessTokenTTL:  15 * time.Minute,
-		RefreshTokenTTL: 7 * 24 * time.Hour,
-	})
+	agb1, err := authgoblue.New(
+		authgoblue.Config{
+			Secret:          "same-secret",
+			Issuer:          "issuer-one",
+			AccessTokenTTL:  15 * time.Minute,
+			RefreshTokenTTL: 7 * 24 * time.Hour,
+		},
+	)
 
-	agb2 := authgoblue.New(authgoblue.Config{
-		Secret:          "same-secret",
-		Issuer:          "issuer-two",
-		AccessTokenTTL:  15 * time.Minute,
-		RefreshTokenTTL: 7 * 24 * time.Hour,
-	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	agb2, err := authgoblue.New(
+		authgoblue.Config{
+			Secret:          "same-secret",
+			Issuer:          "issuer-two",
+			AccessTokenTTL:  15 * time.Minute,
+			RefreshTokenTTL: 7 * 24 * time.Hour,
+		},
+	)
+
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	token, err :=
 		agb1.Token.GenerateAccessToken(
@@ -102,14 +135,18 @@ func TestAccessTokenRejectedWithDifferentIssuer(t *testing.T) {
 	}
 
 	parsed, err :=
-		agb2.Token.ParseAccessToken(token)
+		agb2.Token.ParseAccessToken(
+			token,
+		)
 
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	err =
-		agb2.Token.ValidateAccessToken(parsed)
+		agb2.Token.ValidateAccessToken(
+			parsed,
+		)
 
 	if err == nil {
 		t.Fatal("expected invalid issuer error")

@@ -8,7 +8,7 @@ import (
 
 func TestRefreshTokenRotation(t *testing.T) {
 
-	agb := newTestAuthGoBlue()
+	agb := newTestAuthGoBlue(&testing.T{})
 
 	// buat session awal
 	sess, err :=

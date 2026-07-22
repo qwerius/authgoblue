@@ -13,7 +13,7 @@ func TestAuthGoBlueConcurrentTokenGeneration(
 	t *testing.T,
 ) {
 
-	agb :=
+	agb, err :=
 		authgoblue.New(
 			authgoblue.Config{
 
@@ -24,6 +24,10 @@ func TestAuthGoBlueConcurrentTokenGeneration(
 				AccessTokenTTL: 15 * time.Minute,
 			},
 		)
+
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	var wg sync.WaitGroup
 

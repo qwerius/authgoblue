@@ -10,12 +10,21 @@ import (
 
 func newRefreshFlowAuthGoBlue() *authgoblue.AuthGoBlue {
 
-	return authgoblue.New(authgoblue.Config{
-		Secret:          "refresh-secret-key",
-		Issuer:          "refresh-service",
-		AccessTokenTTL:  15 * time.Minute,
-		RefreshTokenTTL: 7 * 24 * time.Hour,
-	})
+	agb, err :=
+		authgoblue.New(
+			authgoblue.Config{
+				Secret:          "refresh-secret-key",
+				Issuer:          "refresh-service",
+				AccessTokenTTL:  15 * time.Minute,
+				RefreshTokenTTL: 7 * 24 * time.Hour,
+			},
+		)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return agb
 }
 
 func TestRefreshTokenFlowCreatesNewAccessToken(t *testing.T) {

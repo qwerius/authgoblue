@@ -12,7 +12,7 @@ import (
 
 func newRefreshBenchAuthGoBlue() *authgoblue.AuthGoBlue {
 
-	return authgoblue.New(
+	agb, err := authgoblue.New(
 		authgoblue.Config{
 			Secret: "bench-secret",
 
@@ -27,6 +27,10 @@ func newRefreshBenchAuthGoBlue() *authgoblue.AuthGoBlue {
 			RevokeStore: revoke.NewMemoryStore(),
 		},
 	)
+	if err != nil {
+		panic(err)
+	}
+	return agb
 }
 
 func BenchmarkRefreshTokenAtomicRotation(

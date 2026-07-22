@@ -92,13 +92,16 @@ func TestAuthClientLogin(t *testing.T) {
 
 	provider := &mockProvider{}
 
-	agb := authgoblue.New(
+	agb, err := authgoblue.New(
 		authgoblue.Config{
 			Secret:   "secret",
 			Issuer:   "test",
 			Provider: provider,
 		},
 	)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	if agb.Client == nil {
 		t.Fatal("auth client should not be nil")

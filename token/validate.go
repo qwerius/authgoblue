@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	ErrInvalidAccessType  = errors.New("github.com/qwerius/authgoblue: invalid access token type")
-	ErrInvalidRefreshType = errors.New("github.com/qwerius/authgoblue: invalid refresh token type")
+	ErrInvalidAccessType  = errors.New("authgoblue: invalid access token type")
+	ErrInvalidRefreshType = errors.New("authgoblue: invalid refresh token type")
 )
 
 func (s *Service) ValidateAccessToken(
@@ -56,6 +56,10 @@ func (s *Service) validateCommonClaims(
 		return err
 	}
 
+	if err := s.validateIssuedAt(c); err != nil {
+		return err
+	}
+
 	if err := s.validateExpiration(c); err != nil {
 		return err
 	}
@@ -80,21 +84,31 @@ func (s *Service) validateIssuer(
 	return nil
 }
 
+func (s *Service) validateIssuedAt(
+	c claims.Claims,
+) error {
+	if c.IssuedAt == 0 {
+		return ErrMissingIssuedAt
+	}
+
+	if c.IssuedAt > time.Now().Unix()+30 {
+		return ErrInvalidIssuedAt
+	}
+	return nil
+}
+
 func (s *Service) validateExpiration(
 	c claims.Claims,
 ) error {
 
 	if c.ExpiresAt == 0 {
-
 		return ErrMissingExpiration
 	}
 
-	now := time.Now().UTC().Unix()
-
-	if now >= c.ExpiresAt {
-
+	if c.Expired() {
 		return ErrTokenExpired
 	}
 
 	return nil
+
 }

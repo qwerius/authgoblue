@@ -8,63 +8,58 @@ import (
 	"github.com/qwerius/authgoblue/session"
 )
 
+const (
+	DefaultIssuer = "authgoblue"
+)
+
 type Config struct {
 
-	// Secret key untuk signing JWT
+	// Required:
+	// Secret key untuk signing JWT.
+	// Consumer harus mengganti dengan secret sendiri.
 	Secret string
 
-	// Nama aplikasi/service
+	// Default: authgoblue
+	// Nama aplikasi/service penerbit token.
 	Issuer string
 
-	// Durasi access token
+	// Default: 15 menit
+	// Durasi access token.
 	AccessTokenTTL time.Duration
 
-	// Durasi refresh token
+	// Default: 7 hari
+	// Durasi refresh token.
 	RefreshTokenTTL time.Duration
 
+	// Default: Authorization
 	Header string
 
+	// Default: Bearer
 	Prefix string
 
+	// Default: false
+	// Jika true, token disimpan melalui cookie.
 	Cookie bool
 
-	AccessCookieName  string
+	// Default: access_token
+	AccessCookieName string
+
+	// Default: refresh_token
 	RefreshCookieName string
 
-	// Auth provider
+	// Required:
+	// Provider autentikasi user.
 	Provider auth.Provider
 
-	// Session storage
-	// default MemoryStore
+	// Optional:
+	// Default: MemoryStore.
 	SessionStore session.Store
 
-	// Maximum active sessions per user
-	// default 5
+	// Default: 5
+	// Maximum session aktif per user.
 	MaxSessions int
 
-	// Token revoke storage
-	// default MemoryStore
+	// Optional:
+	// Default: MemoryStore.
 	RevokeStore revoke.Store
-}
-
-func DefaultConfig() Config {
-
-	return Config{
-
-		AccessTokenTTL: 15 * time.Minute,
-
-		RefreshTokenTTL: 7 * 24 * time.Hour,
-
-		Header: "Authorization",
-
-		Prefix: "Bearer",
-
-		Cookie: false,
-
-		AccessCookieName: "access_token",
-
-		RefreshCookieName: "refresh_token",
-
-		MaxSessions: 5,
-	}
 }

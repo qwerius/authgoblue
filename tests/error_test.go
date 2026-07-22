@@ -7,51 +7,55 @@ import (
 
 	"github.com/qwerius/authgoblue"
 	"github.com/qwerius/authgoblue/claims"
+	"github.com/qwerius/authgoblue/token"
 )
 
 func TestInvalidIssuerError(t *testing.T) {
 
-	agb := authgoblue.New(
+	agb, err := authgoblue.New(
 		authgoblue.Config{
-
 			Secret: "error-secret",
-
 			Issuer: "issuer-a",
 
 			AccessTokenTTL: 15 * time.Minute,
+
+			Provider: &mockProvider{},
 		},
 	)
 
-	err :=
-		agb.Token.ValidateAccessToken(
-			claims.Claims{
+	if err != nil {
+		t.Fatal(err)
+	}
 
-				UserID: "user-123",
+	validateErr := agb.Token.ValidateAccessToken(
+		claims.Claims{
+			UserID: "user-123",
 
-				Issuer: "issuer-b",
+			Issuer: "issuer-b",
 
-				TokenType: claims.TokenTypeAccess,
+			TokenType: claims.TokenTypeAccess,
 
-				ExpiresAt: time.Now().
-					Add(time.Hour).
-					Unix(),
-			},
-		)
+			IssuedAt: time.Now().Unix(),
 
-	if err == nil {
+			ExpiresAt: time.Now().
+				Add(time.Hour).
+				Unix(),
+		},
+	)
 
+	if validateErr == nil {
 		t.Fatal(
 			"expected issuer error",
 		)
 	}
 
-	// memastikan error tersedia
-	// dan bisa dicek
-	if !errors.Is(err, err) {
-
-		t.Fatal(
-			"error should be comparable",
+	if !errors.Is(
+		validateErr,
+		token.ErrInvalidIssuer,
+	) {
+		t.Fatalf(
+			"expected invalid issuer error, got %v",
+			validateErr,
 		)
 	}
-
 }

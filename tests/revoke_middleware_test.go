@@ -4,9 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
-	"github.com/qwerius/authgoblue"
 	"github.com/qwerius/authgoblue/claims"
 
 	"github.com/gofiber/fiber/v3"
@@ -14,16 +12,7 @@ import (
 
 func TestRevokedSessionRejectedByMiddleware(t *testing.T) {
 
-	agb := authgoblue.New(
-		authgoblue.Config{
-			Secret:          "test-secret",
-			Issuer:          "test",
-			AccessTokenTTL:  15 * time.Minute,
-			RefreshTokenTTL: 7 * 24 * time.Hour,
-			Header:          "Authorization",
-			Prefix:          "Bearer",
-		},
-	)
+	agb := newMiddlewareOptionTestAuthGoBlue()
 
 	app := fiber.New()
 
@@ -41,7 +30,6 @@ func TestRevokedSessionRejectedByMiddleware(t *testing.T) {
 		},
 	)
 
-	// buat session
 	sess, err := agb.Session.Create(
 		"user-123",
 	)
@@ -66,11 +54,9 @@ func TestRevokedSessionRejectedByMiddleware(t *testing.T) {
 	if err != nil {
 		t.Fatalf(
 			"generate token error: %v",
-			err,
 		)
 	}
 
-	// revoke session
 	err = agb.Session.Revoke(
 		sess.ID,
 	)
@@ -103,7 +89,6 @@ func TestRevokedSessionRejectedByMiddleware(t *testing.T) {
 	}
 
 	if resp.StatusCode != fiber.StatusUnauthorized {
-
 		t.Fatalf(
 			"expected 401 for revoked session, got %d",
 			resp.StatusCode,

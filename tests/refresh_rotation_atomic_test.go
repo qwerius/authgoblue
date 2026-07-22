@@ -15,7 +15,7 @@ import (
 
 func newRefreshTestAuthGoBlue() *authgoblue.AuthGoBlue {
 
-	return authgoblue.New(
+	agb, err := authgoblue.New(
 		authgoblue.Config{
 			Secret: "test-secret",
 
@@ -30,6 +30,12 @@ func newRefreshTestAuthGoBlue() *authgoblue.AuthGoBlue {
 			RevokeStore: revoke.NewMemoryStore(),
 		},
 	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return agb
 }
 
 func TestRefreshTokenAtomicRotation(t *testing.T) {

@@ -7,6 +7,14 @@ var (
 		"github.com/qwerius/authgoblue: invalid issuer",
 	)
 
+	ErrMissingIssuedAt = errors.New(
+		"github.com/qwerius/authgoblue: missing issued at",
+	)
+
+	ErrInvalidIssuedAt = errors.New(
+		"github.com/qwerius/authgoblue: invalid issued at",
+	)
+
 	ErrMissingExpiration = errors.New(
 		"github.com/qwerius/authgoblue: missing expiration",
 	)

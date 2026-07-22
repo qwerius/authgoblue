@@ -14,20 +14,28 @@ import (
 
 func newMiddlewareOptionTestAuthGoBlue() *authgoblue.AuthGoBlue {
 
-	return authgoblue.New(authgoblue.Config{
+	agb, err := authgoblue.New(
+		authgoblue.Config{
 
-		Secret: "options-secret",
+			Secret: "options-secret",
 
-		Issuer: "options-service",
+			Issuer: "options-service",
 
-		AccessTokenTTL: 15 * time.Minute,
+			AccessTokenTTL: 15 * time.Minute,
 
-		RefreshTokenTTL: 7 * 24 * time.Hour,
+			RefreshTokenTTL: 7 * 24 * time.Hour,
 
-		Header: "X-Auth-Token",
+			Header: "X-Auth-Token",
 
-		Prefix: "Token",
-	})
+			Prefix: "Token",
+		},
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return agb
 }
 
 func TestRequireAuthWithCustomHeaderAndPrefix(t *testing.T) {

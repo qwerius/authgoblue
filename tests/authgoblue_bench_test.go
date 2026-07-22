@@ -21,7 +21,7 @@ import (
 )
 
 func newBenchmarkAuthGoBlue() *authgoblue.AuthGoBlue {
-	return authgoblue.New(authgoblue.Config{
+	agb, err := authgoblue.New(authgoblue.Config{
 		Secret:           "benchmark-secret-key",
 		Issuer:           "benchmark-service",
 		AccessTokenTTL:   15 * time.Minute,
@@ -31,6 +31,12 @@ func newBenchmarkAuthGoBlue() *authgoblue.AuthGoBlue {
 		Cookie:           false,
 		AccessCookieName: "github.com/qwerius/authgoblue_token",
 	})
+	if err != nil {
+		panic(err)
+	}
+
+	return agb
+
 }
 
 func benchmarkClaims() claims.Claims {
@@ -744,7 +750,7 @@ func BenchmarkRequireAuthMiddlewareRedis(
 			client,
 		)
 
-	agb :=
+	agb, err :=
 		authgoblue.New(
 			authgoblue.Config{
 				Secret:       "benchmark-secret-key",
@@ -752,6 +758,10 @@ func BenchmarkRequireAuthMiddlewareRedis(
 				SessionStore: store,
 			},
 		)
+
+	if err != nil {
+		panic(err)
+	}
 
 	s, err :=
 		agb.Session.Create(

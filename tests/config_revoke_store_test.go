@@ -23,7 +23,7 @@ func TestAuthGoBlueUsesCustomRevokeStore(t *testing.T) {
 			redisClient,
 		)
 
-	agb :=
+	agb, err :=
 		authgoblue.New(
 			authgoblue.Config{
 
@@ -34,6 +34,10 @@ func TestAuthGoBlueUsesCustomRevokeStore(t *testing.T) {
 				RevokeStore: store,
 			},
 		)
+
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	if agb.Revoke == nil {
 
@@ -47,7 +51,7 @@ func TestAuthGoBlueUsesCustomRevokeStore(t *testing.T) {
 
 func TestAuthGoBlueDefaultUsesMemoryRevokeStore(t *testing.T) {
 
-	agb :=
+	agb, err :=
 		authgoblue.New(
 			authgoblue.Config{
 
@@ -55,6 +59,10 @@ func TestAuthGoBlueDefaultUsesMemoryRevokeStore(t *testing.T) {
 				Issuer: "test",
 			},
 		)
+
+	if err != nil {
+		t.Fatal(err)
+	}
 	if agb.Revoke == nil {
 
 		t.Fatal(

@@ -10,25 +10,39 @@ import (
 	"github.com/qwerius/authgoblue/token"
 )
 
-func TestErrorTypeInvalidIssuer(t *testing.T) {
+func newTestAuthGoBlue(t *testing.T) *authgoblue.AuthGoBlue {
 
-	agb := authgoblue.New(
+	agb, err := authgoblue.New(
 		authgoblue.Config{
 			Secret: "test-secret",
 			Issuer: "service-a",
 
 			AccessTokenTTL: 15 * time.Minute,
+
+			Provider: &mockProvider{},
 		},
 	)
 
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return agb
+}
+
+func TestErrorTypeInvalidIssuer(t *testing.T) {
+
+	agb := newTestAuthGoBlue(t)
+
 	err := agb.Token.ValidateAccessToken(
 		claims.Claims{
-
 			UserID: "user-123",
 
 			Issuer: "service-b",
 
 			TokenType: claims.TokenTypeAccess,
+
+			IssuedAt: time.Now().Unix(),
 
 			ExpiresAt: time.Now().
 				Add(time.Hour).
@@ -44,34 +58,28 @@ func TestErrorTypeInvalidIssuer(t *testing.T) {
 		err,
 		token.ErrInvalidIssuer,
 	) {
-
 		t.Fatalf(
 			"expected ErrInvalidIssuer, got %v",
 			err,
 		)
 	}
-
 }
 
 func TestErrorTypeExpiredToken(t *testing.T) {
 
-	agb := authgoblue.New(
-		authgoblue.Config{
-			Secret: "test-secret",
-			Issuer: "service-a",
-
-			AccessTokenTTL: 15 * time.Minute,
-		},
-	)
+	agb := newTestAuthGoBlue(t)
 
 	err := agb.Token.ValidateAccessToken(
 		claims.Claims{
-
 			UserID: "user-123",
 
 			Issuer: "service-a",
 
 			TokenType: claims.TokenTypeAccess,
+
+			IssuedAt: time.Now().
+				Add(-2 * time.Hour).
+				Unix(),
 
 			ExpiresAt: time.Now().
 				Add(-time.Hour).
@@ -83,32 +91,26 @@ func TestErrorTypeExpiredToken(t *testing.T) {
 		err,
 		token.ErrTokenExpired,
 	) {
-
 		t.Fatalf(
 			"expected ErrTokenExpired, got %v",
 			err,
 		)
 	}
-
 }
 
 func TestErrorTypeMissingExpiration(t *testing.T) {
 
-	agb := authgoblue.New(
-		authgoblue.Config{
-			Secret: "test-secret",
-			Issuer: "service-a",
-		},
-	)
+	agb := newTestAuthGoBlue(t)
 
 	err := agb.Token.ValidateAccessToken(
 		claims.Claims{
-
 			UserID: "user-123",
 
 			Issuer: "service-a",
 
 			TokenType: claims.TokenTypeAccess,
+
+			IssuedAt: time.Now().Unix(),
 
 			ExpiresAt: 0,
 		},
@@ -118,11 +120,9 @@ func TestErrorTypeMissingExpiration(t *testing.T) {
 		err,
 		token.ErrMissingExpiration,
 	) {
-
 		t.Fatalf(
 			"expected ErrMissingExpiration, got %v",
 			err,
 		)
 	}
-
 }

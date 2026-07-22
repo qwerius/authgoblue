@@ -12,12 +12,17 @@ import (
 
 func TestRefreshTokenReuseDetection(t *testing.T) {
 
-	agb := authgoblue.New(
-		authgoblue.Config{
-			Secret: "test-secret",
-			Issuer: "test",
-		},
-	)
+	agb, err :=
+		authgoblue.New(
+			authgoblue.Config{
+				Secret: "test-secret",
+				Issuer: "test",
+			},
+		)
+
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	session, err :=
 		agb.Session.Create(

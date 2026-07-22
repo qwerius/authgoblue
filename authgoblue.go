@@ -42,11 +42,15 @@ type AuthGoBlue struct {
 
 func New(
 	config Config,
-) *AuthGoBlue {
+) (*AuthGoBlue, error) {
 
 	config = applyDefaults(
 		config,
 	)
+
+	if err := ValidateConfig(config); err != nil {
+		return nil, err
+	}
 
 	agb := &AuthGoBlue{
 		config: config,
@@ -79,36 +83,12 @@ func New(
 	// Hooks
 	agb.Hooks = hooks.NewRegistry()
 
-	// Revoke
-	var revokeStore revoke.Store
-
-	if config.RevokeStore != nil {
-
-		revokeStore = config.RevokeStore
-
-	} else {
-
-		revokeStore = revoke.NewMemoryStore()
-	}
-
 	agb.Revoke = revoke.NewService(
-		revokeStore,
+		config.RevokeStore,
 	)
 
-	// Session
-	var sessionStore session.Store
-
-	if config.SessionStore != nil {
-
-		sessionStore = config.SessionStore
-
-	} else {
-
-		sessionStore = session.NewMemoryStore()
-	}
-
 	agb.Session = session.NewService(
-		sessionStore,
+		config.SessionStore,
 		agb.Hooks,
 	)
 
@@ -141,30 +121,28 @@ func New(
 	agb.Storage = storage.NewRegistry()
 
 	// Auth layer
-	if config.Provider != nil {
 
-		agb.Auth = auth.New(
-			config.Provider,
-		)
+	agb.Auth = auth.New(
+		config.Provider,
+	)
 
-		agb.Client = authclient.New(
-			config.Provider,
+	agb.Client = authclient.New(
+		config.Provider,
 
-			agb.Token,
+		agb.Token,
 
-			agb.Session,
+		agb.Session,
 
-			agb.Revoke,
+		agb.Revoke,
 
-			agb.Context,
+		agb.Context,
 
-			agb.Hooks,
+		agb.Hooks,
 
-			config.MaxSessions,
-		)
-	}
+		config.MaxSessions,
+	)
 
-	return agb
+	return agb, nil
 }
 
 func (a *AuthGoBlue) Config() Config {

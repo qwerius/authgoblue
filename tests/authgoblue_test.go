@@ -16,21 +16,8 @@ import (
 	"github.com/gofiber/fiber/v3"
 )
 
-func newTestAuthGoBlue() *authgoblue.AuthGoBlue {
-	return authgoblue.New(authgoblue.Config{
-		Secret:           "test-secret-key",
-		Issuer:           "test-issuer",
-		AccessTokenTTL:   15 * time.Minute,
-		RefreshTokenTTL:  7 * 24 * time.Hour,
-		Header:           "Authorization",
-		Prefix:           "Bearer",
-		Cookie:           false,
-		AccessCookieName: "github.com/qwerius/authgoblue_token",
-	})
-}
-
 func TestNewAppliesDefaults(t *testing.T) {
-	agb := newTestAuthGoBlue()
+	agb := newTestAuthGoBlue(t)
 
 	cfg := agb.Config()
 
@@ -56,7 +43,7 @@ func TestNewAppliesDefaults(t *testing.T) {
 }
 
 func TestTokenGenerateParseAndValidateAccessToken(t *testing.T) {
-	agb := newTestAuthGoBlue()
+	agb := newTestAuthGoBlue(t)
 
 	input := claims.Claims{
 		UserID:      "user-123",
@@ -94,7 +81,7 @@ func TestTokenGenerateParseAndValidateAccessToken(t *testing.T) {
 }
 
 func TestTokenGenerateParseAndValidateRefreshToken(t *testing.T) {
-	agb := newTestAuthGoBlue()
+	agb := newTestAuthGoBlue(t)
 
 	input := claims.Claims{
 		UserID:   "user-123",
@@ -123,7 +110,7 @@ func TestTokenGenerateParseAndValidateRefreshToken(t *testing.T) {
 }
 
 func TestRequireAuthAcceptsValidBearerTokenAndRejectsInvalidToken(t *testing.T) {
-	agb := newTestAuthGoBlue()
+	agb := newTestAuthGoBlue(t)
 
 	app := fiber.New()
 	app.Use("/protected", agb.Middleware.RequireAuth())
@@ -179,7 +166,7 @@ func TestRequireAuthAcceptsValidBearerTokenAndRejectsInvalidToken(t *testing.T) 
 }
 
 func TestRoleAndPermissionMiddlewares(t *testing.T) {
-	agb := newTestAuthGoBlue()
+	agb := newTestAuthGoBlue(t)
 
 	app := fiber.New()
 
@@ -261,7 +248,7 @@ func TestRoleAndPermissionMiddlewares(t *testing.T) {
 }
 
 func TestContextHelpersReadClaimsFromFiberContext(t *testing.T) {
-	agb := newTestAuthGoBlue()
+	agb := newTestAuthGoBlue(t)
 	app := fiber.New()
 
 	app.Use(func(c fiber.Ctx) error {
@@ -333,7 +320,7 @@ func TestContextHelpersReadClaimsFromFiberContext(t *testing.T) {
 }
 
 func TestAuthGoBlueDefaultUsesMemorySessionStore(t *testing.T) {
-	agb := newTestAuthGoBlue()
+	agb := newTestAuthGoBlue(t)
 
 	if agb.Session == nil {
 		t.Fatal("expected session service")
@@ -349,7 +336,7 @@ func TestAuthGoBlueDefaultUsesMemorySessionStore(t *testing.T) {
 func TestAuthGoBlueUsesCustomSessionStore(t *testing.T) {
 	customStore := session.NewMemoryStore()
 
-	agb := authgoblue.New(authgoblue.Config{
+	agb, err := authgoblue.New(authgoblue.Config{
 		Secret:           "test-secret-key",
 		Issuer:           "test-issuer",
 		AccessTokenTTL:   15 * time.Minute,
@@ -360,6 +347,10 @@ func TestAuthGoBlueUsesCustomSessionStore(t *testing.T) {
 		AccessCookieName: "github.com/qwerius/authgoblue_token",
 		SessionStore:     customStore,
 	})
+
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	if agb.Session == nil {
 		t.Fatal("expected session service")
@@ -374,7 +365,7 @@ func TestAuthGoBlueUsesCustomSessionStore(t *testing.T) {
 
 func TestRequireSessionAcceptsValidSession(t *testing.T) {
 
-	agb := newTestAuthGoBlue()
+	agb := newTestAuthGoBlue(t)
 
 	app := fiber.New()
 
@@ -467,7 +458,7 @@ func TestRequireSessionAcceptsValidSession(t *testing.T) {
 
 func TestRequireSessionRejectsRevokedSession(t *testing.T) {
 
-	agb := newTestAuthGoBlue()
+	agb := newTestAuthGoBlue(t)
 
 	app := fiber.New()
 
@@ -540,7 +531,7 @@ func TestRequireSessionRejectsRevokedSession(t *testing.T) {
 
 func TestRequireSessionRejectsExpiredSession(t *testing.T) {
 
-	agb := newTestAuthGoBlue()
+	agb := newTestAuthGoBlue(t)
 
 	app := fiber.New()
 
@@ -851,11 +842,15 @@ func TestSessionLimitRevokesOldestSession(t *testing.T) {
 
 func TestAuthGoBlueDefaultMaxSessions(t *testing.T) {
 
-	agb := authgoblue.New(
+	agb, err := authgoblue.New(
 		authgoblue.Config{
 			Secret: "secret",
 		},
 	)
+
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	if agb.Config().MaxSessions != 5 {
 		t.Fatalf(
@@ -867,12 +862,15 @@ func TestAuthGoBlueDefaultMaxSessions(t *testing.T) {
 
 func TestAuthGoBlueCustomMaxSessions(t *testing.T) {
 
-	agb := authgoblue.New(
+	agb, err := authgoblue.New(
 		authgoblue.Config{
 			Secret:      "secret",
 			MaxSessions: 10,
 		},
 	)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	if agb.Config().MaxSessions != 10 {
 		t.Fatalf(
@@ -884,7 +882,18 @@ func TestAuthGoBlueCustomMaxSessions(t *testing.T) {
 
 func TestDefaultConfigValues(t *testing.T) {
 
-	cfg := authgoblue.DefaultConfig()
+	agb, err := authgoblue.New(
+		authgoblue.Config{
+			Secret:   "secret",
+			Provider: &mockProvider{},
+		},
+	)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	cfg := agb.Config()
 
 	if cfg.Cookie != false {
 		t.Fatal("expected cookie false")
@@ -907,7 +916,7 @@ func TestDefaultConfigValues(t *testing.T) {
 
 func TestRefreshRotationCreatesNewSession(t *testing.T) {
 
-	agb := newTestAuthGoBlue()
+	agb := newTestAuthGoBlue(t)
 
 	sess, err :=
 		agb.Session.Create(
@@ -955,7 +964,7 @@ func TestRefreshRotationCreatesNewSession(t *testing.T) {
 
 func TestRefreshRotationRejectsReuse(t *testing.T) {
 
-	agb := newTestAuthGoBlue()
+	agb := newTestAuthGoBlue(t)
 
 	sess, err :=
 		agb.Session.Create(
@@ -1002,9 +1011,13 @@ func TestRefreshRotationRejectsReuse(t *testing.T) {
 
 func FuzzParseToken(f *testing.F) {
 
-	agb := authgoblue.New(authgoblue.Config{
+	agb, err := authgoblue.New(authgoblue.Config{
 		Secret: "fuzz-secret",
 	})
+
+	if err != nil {
+		f.Fatal(err)
+	}
 
 	f.Add("invalid.token.data")
 
