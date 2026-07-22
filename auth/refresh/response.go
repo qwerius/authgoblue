@@ -7,5 +7,8 @@ type Response struct {
 
 	RefreshToken string
 
-	Claims claims.Claims
+	Claims          claims.Claims
+	AccessExpiresAt int64
+
+	RefreshExpiresAt int64
 }

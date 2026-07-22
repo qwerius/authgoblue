@@ -48,7 +48,7 @@ func TestRefreshTokenReuseDetection(t *testing.T) {
 	)
 
 	// pertama berhasil
-	_, _, err =
+	_, _, _, err =
 		agb.Refresh.Rotate(
 			refreshToken,
 		)
@@ -59,7 +59,7 @@ func TestRefreshTokenReuseDetection(t *testing.T) {
 	)
 
 	// token lama dipakai lagi
-	_, _, err =
+	_, _, _, err =
 		agb.Refresh.Rotate(
 			refreshToken,
 		)

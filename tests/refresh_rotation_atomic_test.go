@@ -84,7 +84,7 @@ func TestRefreshTokenAtomicRotation(t *testing.T) {
 
 			defer wg.Done()
 
-			_, _, err :=
+			_, _, _, err =
 				agb.Refresh.Rotate(
 					refreshToken,
 				)

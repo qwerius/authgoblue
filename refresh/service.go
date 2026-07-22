@@ -35,6 +35,7 @@ func (s *Service) Rotate(
 ) (
 	string,
 	string,
+	claims.Claims,
 	error,
 ) {
 
@@ -44,7 +45,7 @@ func (s *Service) Rotate(
 		)
 
 	if err != nil {
-		return "", "", err
+		return "", "", claims.Claims{}, err
 	}
 
 	err =
@@ -53,12 +54,12 @@ func (s *Service) Rotate(
 		)
 
 	if err != nil {
-		return "", "", err
+		return "", "", claims.Claims{}, err
 	}
 
 	if oldClaims.SessionID == "" {
 
-		return "", "", ErrMissingSessionID
+		return "", "", claims.Claims{}, ErrMissingSessionID
 	}
 
 	// cek session masih aktif
@@ -68,12 +69,12 @@ func (s *Service) Rotate(
 		)
 
 	if err != nil {
-		return "", "", err
+		return "", "", claims.Claims{}, err
 	}
 
 	if currentSession.Revoked {
 
-		return "", "", session.ErrSessionRevoked
+		return "", "", claims.Claims{}, session.ErrSessionRevoked
 	}
 
 	// atomic consume refresh token
@@ -90,12 +91,12 @@ func (s *Service) Rotate(
 			)
 
 		if err != nil {
-			return "", "", err
+			return "", "", claims.Claims{}, err
 		}
 
 		if !ok {
 
-			return "", "", ErrRefreshTokenReuse
+			return "", "", claims.Claims{}, ErrRefreshTokenReuse
 		}
 	}
 
@@ -107,7 +108,7 @@ func (s *Service) Rotate(
 
 	if err != nil {
 
-		return "", "", err
+		return "", "", claims.Claims{}, err
 	}
 
 	newClaims := claims.Claims{
@@ -132,7 +133,7 @@ func (s *Service) Rotate(
 
 	if err != nil {
 
-		return "", "", err
+		return "", "", claims.Claims{}, err
 	}
 
 	newRefresh, err :=
@@ -142,8 +143,8 @@ func (s *Service) Rotate(
 
 	if err != nil {
 
-		return "", "", err
+		return "", "", claims.Claims{}, err
 	}
 
-	return newAccess, newRefresh, nil
+	return newAccess, newRefresh, newClaims, nil
 }

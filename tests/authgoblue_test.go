@@ -943,6 +943,7 @@ func TestRefreshRotationCreatesNewSession(t *testing.T) {
 
 	newAccess,
 		newRefresh,
+		refreshClaims,
 		err :=
 		agb.Refresh.Rotate(
 			refreshToken,
@@ -960,6 +961,9 @@ func TestRefreshRotationCreatesNewSession(t *testing.T) {
 		t.Fatal("expected new refresh token")
 	}
 
+	if refreshClaims.ExpiresAt == 0 {
+		t.Fatal("expected refresh token expiry")
+	}
 }
 
 func TestRefreshRotationRejectsReuse(t *testing.T) {
@@ -987,7 +991,7 @@ func TestRefreshRotationRejectsReuse(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, _, err =
+	_, _, _, err =
 		agb.Refresh.Rotate(
 			refreshToken,
 		)
@@ -996,7 +1000,7 @@ func TestRefreshRotationRejectsReuse(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, _, err =
+	_, _, _, err =
 		agb.Refresh.Rotate(
 			refreshToken,
 		)

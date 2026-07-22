@@ -67,7 +67,7 @@ func BenchmarkRefreshTokenAtomicRotation(
 			b.Fatal(err)
 		}
 
-		_, _, err =
+		_, _, _, err =
 			agb.Refresh.Rotate(
 				refreshToken,
 			)

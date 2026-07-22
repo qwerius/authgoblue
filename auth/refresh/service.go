@@ -41,7 +41,7 @@ func (s *Service) Execute(
 	req Request,
 ) (*Response, error) {
 
-	accessToken, refreshToken, err :=
+	accessToken, refreshToken, refreshExpiresAt, err :=
 		s.Rotate(
 			req.RefreshToken,
 		)
@@ -80,6 +80,10 @@ func (s *Service) Execute(
 
 		RefreshToken: refreshToken,
 
+		AccessExpiresAt: claimsData.ExpiresAt,
+
+		RefreshExpiresAt: refreshExpiresAt,
+
 		Claims: claims.Claims{
 
 			UserID: claimsData.UserID,
@@ -102,6 +106,7 @@ func (s *Service) Rotate(
 ) (
 	string,
 	string,
+	int64,
 	error,
 ) {
 
@@ -111,7 +116,7 @@ func (s *Service) Rotate(
 		)
 
 	if err != nil {
-		return "", "", err
+		return "", "", 0, err
 	}
 
 	err =
@@ -120,20 +125,16 @@ func (s *Service) Rotate(
 		)
 
 	if err != nil {
-		return "", "", err
+		return "", "", 0, err
 	}
 
 	if oldClaims.SessionID == "" {
-
-		return "", "", ErrMissingSessionID
+		return "", "", 0, ErrMissingSessionID
 	}
 
 	if oldClaims.TokenID == "" {
-
-		return "", "", ErrMissingTokenID
+		return "", "", 0, ErrMissingTokenID
 	}
-
-	// cek refresh token reuse
 
 	if s.revoke != nil {
 
@@ -143,16 +144,13 @@ func (s *Service) Rotate(
 			)
 
 		if err != nil {
-			return "", "", err
+			return "", "", 0, err
 		}
 
 		if revoked {
-
-			return "", "", ErrRefreshTokenReuse
+			return "", "", 0, ErrRefreshTokenReuse
 		}
 	}
-
-	// cek session aktif
 
 	currentSession, err :=
 		s.session.Get(
@@ -160,12 +158,11 @@ func (s *Service) Rotate(
 		)
 
 	if err != nil {
-		return "", "", err
+		return "", "", 0, err
 	}
 
 	if currentSession.Revoked {
-
-		return "", "", session.ErrSessionRevoked
+		return "", "", 0, session.ErrSessionRevoked
 	}
 
 	newClaims := claims.Claims{
@@ -183,15 +180,13 @@ func (s *Service) Rotate(
 		Permissions: oldClaims.Permissions,
 	}
 
-	// generate token baru dahulu
-
 	newAccess, err :=
 		s.token.GenerateAccessToken(
 			newClaims,
 		)
 
 	if err != nil {
-		return "", "", err
+		return "", "", 0, err
 	}
 
 	newRefresh, err :=
@@ -200,10 +195,17 @@ func (s *Service) Rotate(
 		)
 
 	if err != nil {
-		return "", "", err
+		return "", "", 0, err
 	}
 
-	// revoke refresh token lama
+	newRefreshClaims, err :=
+		s.token.ParseRefreshToken(
+			newRefresh,
+		)
+
+	if err != nil {
+		return "", "", 0, err
+	}
 
 	if s.revoke != nil {
 
@@ -217,11 +219,9 @@ func (s *Service) Rotate(
 			)
 
 		if err != nil {
-			return "", "", err
+			return "", "", 0, err
 		}
 	}
-
-	// update aktivitas session
 
 	err =
 		s.session.Touch(
@@ -229,8 +229,8 @@ func (s *Service) Rotate(
 		)
 
 	if err != nil {
-		return "", "", err
+		return "", "", 0, err
 	}
 
-	return newAccess, newRefresh, nil
+	return newAccess, newRefresh, newRefreshClaims.ExpiresAt, nil
 }
