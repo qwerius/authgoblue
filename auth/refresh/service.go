@@ -29,14 +29,10 @@ func New(
 ) *Service {
 
 	return &Service{
-
-		token: tokenService,
-
-		revoke: revokeService,
-
+		token:   tokenService,
+		revoke:  revokeService,
 		session: sessionService,
-
-		hooks: hookRegistry,
+		hooks:   hookRegistry,
 	}
 }
 
@@ -69,7 +65,6 @@ func (s *Service) Execute(
 			ctx,
 			hooks.EventAfterRefresh,
 			hooks.Payload{
-
 				UserID: claimsData.UserID,
 
 				SessionID: claimsData.SessionID,
@@ -133,6 +128,11 @@ func (s *Service) Rotate(
 		return "", "", ErrMissingSessionID
 	}
 
+	if oldClaims.TokenID == "" {
+
+		return "", "", ErrMissingTokenID
+	}
+
 	// cek refresh token reuse
 
 	if s.revoke != nil {
@@ -168,6 +168,41 @@ func (s *Service) Rotate(
 		return "", "", session.ErrSessionRevoked
 	}
 
+	newClaims := claims.Claims{
+
+		UserID: oldClaims.UserID,
+
+		SessionID: oldClaims.SessionID,
+
+		Username: oldClaims.Username,
+
+		Email: oldClaims.Email,
+
+		Role: oldClaims.Role,
+
+		Permissions: oldClaims.Permissions,
+	}
+
+	// generate token baru dahulu
+
+	newAccess, err :=
+		s.token.GenerateAccessToken(
+			newClaims,
+		)
+
+	if err != nil {
+		return "", "", err
+	}
+
+	newRefresh, err :=
+		s.token.GenerateRefreshToken(
+			newClaims,
+		)
+
+	if err != nil {
+		return "", "", err
+	}
+
 	// revoke refresh token lama
 
 	if s.revoke != nil {
@@ -186,44 +221,11 @@ func (s *Service) Rotate(
 		}
 	}
 
-	// update session activity
+	// update aktivitas session
 
 	err =
 		s.session.Touch(
 			oldClaims.SessionID,
-		)
-
-	if err != nil {
-		return "", "", err
-	}
-
-	newClaims := claims.Claims{
-
-		UserID: oldClaims.UserID,
-
-		SessionID: oldClaims.SessionID,
-
-		Username: oldClaims.Username,
-
-		Email: oldClaims.Email,
-
-		Role: oldClaims.Role,
-
-		Permissions: oldClaims.Permissions,
-	}
-
-	newAccess, err :=
-		s.token.GenerateAccessToken(
-			newClaims,
-		)
-
-	if err != nil {
-		return "", "", err
-	}
-
-	newRefresh, err :=
-		s.token.GenerateRefreshToken(
-			newClaims,
 		)
 
 	if err != nil {
