@@ -1,6 +1,9 @@
 package password
 
 import (
+	"crypto/rand"
+	"encoding/hex"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -55,4 +58,24 @@ func (s *Service) Compare(
 	}
 
 	return nil
+}
+
+func (s *Service) GenerateResetToken() string {
+
+	bytes := make(
+		[]byte,
+		32,
+	)
+
+	_, err := rand.Read(
+		bytes,
+	)
+
+	if err != nil {
+		return ""
+	}
+
+	return hex.EncodeToString(
+		bytes,
+	)
 }

@@ -112,6 +112,7 @@ func (c *Client) ForgotPassword() *forgotpassword.Service {
 
 	return forgotpassword.New(
 		c.provider,
+		c.password,
 	)
 }
 
