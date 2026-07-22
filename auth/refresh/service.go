@@ -2,6 +2,7 @@ package refresh
 
 import (
 	"context"
+	"time"
 
 	"github.com/qwerius/authgoblue/claims"
 	"github.com/qwerius/authgoblue/hooks"
@@ -59,6 +60,8 @@ func (s *Service) Execute(
 		)
 	}
 
+	now := time.Now().Unix()
+
 	return &Response{
 
 		AccessToken: accessToken,
@@ -66,10 +69,10 @@ func (s *Service) Execute(
 		RefreshToken: refreshToken,
 
 		AccessExpiresAt: accessExpiresAt,
-		AccessExpiresIn: accessExpiresAt - tokenClaims.IssuedAt,
+		AccessExpiresIn: accessExpiresAt - now,
 
 		RefreshExpiresAt: refreshExpiresAt,
-		RefreshExpiresIn: refreshExpiresAt - tokenClaims.IssuedAt,
+		RefreshExpiresIn: refreshExpiresAt - now,
 
 		Claims: claims.Claims{
 
