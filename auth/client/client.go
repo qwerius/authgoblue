@@ -12,6 +12,7 @@ import (
 	"github.com/qwerius/authgoblue/auth/verifyemail"
 	"github.com/qwerius/authgoblue/ctx"
 	"github.com/qwerius/authgoblue/hooks"
+	"github.com/qwerius/authgoblue/password"
 	coreRefresh "github.com/qwerius/authgoblue/refresh"
 	"github.com/qwerius/authgoblue/revoke"
 	"github.com/qwerius/authgoblue/session"
@@ -29,6 +30,7 @@ type Client struct {
 	hooks *hooks.Registry
 
 	maxSessions int
+	password    *password.Service
 }
 
 func New(
@@ -39,6 +41,7 @@ func New(
 	ctxService *ctx.Service,
 	hookRegistry *hooks.Registry,
 	maxSessions int,
+	password *password.Service,
 ) *Client {
 
 	return &Client{
@@ -56,6 +59,7 @@ func New(
 		hooks: hookRegistry,
 
 		maxSessions: maxSessions,
+		password:    password,
 	}
 }
 
@@ -115,6 +119,7 @@ func (c *Client) ResetPassword() *resetpassword.Service {
 
 	return resetpassword.New(
 		c.provider,
+		c.password,
 	)
 }
 

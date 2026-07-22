@@ -45,8 +45,14 @@ func (s *Service) Compare(
 	hash string,
 ) error {
 
-	return bcrypt.CompareHashAndPassword(
+	err := bcrypt.CompareHashAndPassword(
 		[]byte(hash),
 		[]byte(password),
 	)
+
+	if err != nil {
+		return ErrInvalidPassword
+	}
+
+	return nil
 }

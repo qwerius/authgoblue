@@ -40,7 +40,9 @@ type PasswordResetter interface {
 		ctx context.Context,
 		token string,
 	) (*User, error)
+}
 
+type PasswordUpdater interface {
 	UpdatePassword(
 		ctx context.Context,
 		userID string,
@@ -60,5 +62,6 @@ type Provider interface {
 	Registrar
 	UserFinder
 	PasswordResetter
+	PasswordUpdater
 	EmailVerifier
 }

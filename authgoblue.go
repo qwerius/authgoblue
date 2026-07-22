@@ -140,6 +140,8 @@ func New(
 		agb.Hooks,
 
 		config.MaxSessions,
+
+		agb.Password,
 	)
 
 	return agb, nil
