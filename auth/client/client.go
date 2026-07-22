@@ -12,6 +12,7 @@ import (
 	"github.com/qwerius/authgoblue/auth/verifyemail"
 	"github.com/qwerius/authgoblue/ctx"
 	"github.com/qwerius/authgoblue/hooks"
+	coreRefresh "github.com/qwerius/authgoblue/refresh"
 	"github.com/qwerius/authgoblue/revoke"
 	"github.com/qwerius/authgoblue/session"
 	"github.com/qwerius/authgoblue/token"
@@ -85,8 +86,11 @@ func (c *Client) Refresh() *refresh.Service {
 
 	return refresh.New(
 		c.token,
-		c.revoke,
-		c.session,
+		coreRefresh.NewService(
+			c.token,
+			c.revoke,
+			c.session,
+		),
 		c.hooks,
 	)
 }

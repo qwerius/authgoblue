@@ -2,36 +2,30 @@ package refresh
 
 import (
 	"context"
-	"time"
 
 	"github.com/qwerius/authgoblue/claims"
 	"github.com/qwerius/authgoblue/hooks"
-	"github.com/qwerius/authgoblue/revoke"
-	"github.com/qwerius/authgoblue/session"
+	coreRefresh "github.com/qwerius/authgoblue/refresh"
 	"github.com/qwerius/authgoblue/token"
 )
 
 type Service struct {
 	token *token.Service
 
-	revoke *revoke.Service
-
-	session *session.Service
+	refresh *coreRefresh.Service
 
 	hooks *hooks.Registry
 }
 
 func New(
 	tokenService *token.Service,
-	revokeService *revoke.Service,
-	sessionService *session.Service,
+	refreshService *coreRefresh.Service,
 	hookRegistry *hooks.Registry,
 ) *Service {
 
 	return &Service{
 		token:   tokenService,
-		revoke:  revokeService,
-		session: sessionService,
+		refresh: refreshService,
 		hooks:   hookRegistry,
 	}
 }
@@ -41,8 +35,11 @@ func (s *Service) Execute(
 	req Request,
 ) (*Response, error) {
 
-	accessToken, refreshToken, refreshExpiresAt, err :=
-		s.Rotate(
+	accessToken,
+		refreshToken,
+		tokenClaims,
+		err :=
+		s.refresh.Rotate(
 			req.RefreshToken,
 		)
 
@@ -50,7 +47,7 @@ func (s *Service) Execute(
 		return nil, err
 	}
 
-	claimsData, err :=
+	accessClaims, err :=
 		s.token.ParseAccessToken(
 			accessToken,
 		)
@@ -65,9 +62,9 @@ func (s *Service) Execute(
 			ctx,
 			hooks.EventAfterRefresh,
 			hooks.Payload{
-				UserID: claimsData.UserID,
+				UserID: tokenClaims.UserID,
 
-				SessionID: claimsData.SessionID,
+				SessionID: tokenClaims.SessionID,
 
 				Token: accessToken,
 			},
@@ -80,157 +77,23 @@ func (s *Service) Execute(
 
 		RefreshToken: refreshToken,
 
-		AccessExpiresAt: claimsData.ExpiresAt,
+		AccessExpiresAt: accessClaims.ExpiresAt,
 
-		RefreshExpiresAt: refreshExpiresAt,
+		RefreshExpiresAt: tokenClaims.ExpiresAt,
 
 		Claims: claims.Claims{
 
-			UserID: claimsData.UserID,
+			UserID: tokenClaims.UserID,
 
-			SessionID: claimsData.SessionID,
+			SessionID: tokenClaims.SessionID,
 
-			Username: claimsData.Username,
+			Username: tokenClaims.Username,
 
-			Email: claimsData.Email,
+			Email: tokenClaims.Email,
 
-			Role: claimsData.Role,
+			Role: tokenClaims.Role,
 
-			Permissions: claimsData.Permissions,
+			Permissions: tokenClaims.Permissions,
 		},
 	}, nil
-}
-
-func (s *Service) Rotate(
-	refreshToken string,
-) (
-	string,
-	string,
-	int64,
-	error,
-) {
-
-	oldClaims, err :=
-		s.token.ParseRefreshToken(
-			refreshToken,
-		)
-
-	if err != nil {
-		return "", "", 0, err
-	}
-
-	err =
-		s.token.ValidateRefreshToken(
-			oldClaims,
-		)
-
-	if err != nil {
-		return "", "", 0, err
-	}
-
-	if oldClaims.SessionID == "" {
-		return "", "", 0, ErrMissingSessionID
-	}
-
-	if oldClaims.TokenID == "" {
-		return "", "", 0, ErrMissingTokenID
-	}
-
-	if s.revoke != nil {
-
-		revoked, err :=
-			s.revoke.IsRevoked(
-				oldClaims.TokenID,
-			)
-
-		if err != nil {
-			return "", "", 0, err
-		}
-
-		if revoked {
-			return "", "", 0, ErrRefreshTokenReuse
-		}
-	}
-
-	currentSession, err :=
-		s.session.Get(
-			oldClaims.SessionID,
-		)
-
-	if err != nil {
-		return "", "", 0, err
-	}
-
-	if currentSession.Revoked {
-		return "", "", 0, session.ErrSessionRevoked
-	}
-
-	newClaims := claims.Claims{
-
-		UserID: oldClaims.UserID,
-
-		SessionID: oldClaims.SessionID,
-
-		Username: oldClaims.Username,
-
-		Email: oldClaims.Email,
-
-		Role: oldClaims.Role,
-
-		Permissions: oldClaims.Permissions,
-	}
-
-	newAccess, err :=
-		s.token.GenerateAccessToken(
-			newClaims,
-		)
-
-	if err != nil {
-		return "", "", 0, err
-	}
-
-	newRefresh, err :=
-		s.token.GenerateRefreshToken(
-			newClaims,
-		)
-
-	if err != nil {
-		return "", "", 0, err
-	}
-
-	newRefreshClaims, err :=
-		s.token.ParseRefreshToken(
-			newRefresh,
-		)
-
-	if err != nil {
-		return "", "", 0, err
-	}
-
-	if s.revoke != nil {
-
-		err =
-			s.revoke.Revoke(
-				oldClaims.TokenID,
-				time.Unix(
-					oldClaims.ExpiresAt,
-					0,
-				),
-			)
-
-		if err != nil {
-			return "", "", 0, err
-		}
-	}
-
-	err =
-		s.session.Touch(
-			oldClaims.SessionID,
-		)
-
-	if err != nil {
-		return "", "", 0, err
-	}
-
-	return newAccess, newRefresh, newRefreshClaims.ExpiresAt, nil
 }
