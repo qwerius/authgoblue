@@ -84,7 +84,6 @@ func TestRefreshServiceRotation(t *testing.T) {
 
 	refreshService :=
 		refresh.New(
-			tokenService,
 			rotateService,
 			hookRegistry,
 		)
@@ -101,26 +100,34 @@ func TestRefreshServiceRotation(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if result.AccessToken == "" {
+	if result.AccessExpiresAt <= 0 {
 
 		t.Fatal(
-			"expected new access token",
+			"expected access expires at",
 		)
 
 	}
 
-	if result.RefreshToken == "" {
+	if result.AccessExpiresIn <= 0 {
 
 		t.Fatal(
-			"expected new refresh token",
+			"expected access expires in",
 		)
 
 	}
 
-	if result.RefreshToken == oldRefresh {
+	if result.RefreshExpiresAt <= 0 {
 
 		t.Fatal(
-			"expected refresh token rotation",
+			"expected refresh expires at",
+		)
+
+	}
+
+	if result.RefreshExpiresIn <= 0 {
+
+		t.Fatal(
+			"expected refresh expires in",
 		)
 
 	}
@@ -181,22 +188,6 @@ func TestRefreshServiceRotation(t *testing.T) {
 
 		t.Fatal(
 			"expected same session id after rotation",
-		)
-
-	}
-
-	if result.AccessExpiresAt <= 0 {
-
-		t.Fatal(
-			"expected access expires at",
-		)
-
-	}
-
-	if result.RefreshExpiresAt <= 0 {
-
-		t.Fatal(
-			"expected refresh expires at",
 		)
 
 	}

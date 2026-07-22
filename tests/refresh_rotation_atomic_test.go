@@ -9,27 +9,24 @@ import (
 	"github.com/qwerius/authgoblue"
 	"github.com/qwerius/authgoblue/claims"
 	"github.com/qwerius/authgoblue/refresh"
-	"github.com/qwerius/authgoblue/revoke"
-	"github.com/qwerius/authgoblue/session"
 )
 
 func newRefreshTestAuthGoBlue() *authgoblue.AuthGoBlue {
 
-	agb, err := authgoblue.New(
-		authgoblue.Config{
-			Secret: "test-secret",
+	agb, err :=
+		authgoblue.New(
+			authgoblue.Config{
+				Secret: "test-secret",
 
-			Issuer: "test",
+				Issuer: "test",
 
-			AccessTokenTTL: 15 * time.Minute,
+				Provider: &mockProvider{},
 
-			RefreshTokenTTL: 7 * 24 * time.Hour,
+				AccessTokenTTL: 15 * time.Minute,
 
-			SessionStore: session.NewMemoryStore(),
-
-			RevokeStore: revoke.NewMemoryStore(),
-		},
-	)
+				RefreshTokenTTL: 7 * 24 * time.Hour,
+			},
+		)
 
 	if err != nil {
 		panic(err)
@@ -55,7 +52,6 @@ func TestRefreshTokenAtomicRotation(t *testing.T) {
 	refreshToken, err :=
 		agb.Token.GenerateRefreshToken(
 			claims.Claims{
-
 				UserID: "user-1",
 
 				SessionID: sess.ID,
@@ -84,7 +80,7 @@ func TestRefreshTokenAtomicRotation(t *testing.T) {
 
 			defer wg.Done()
 
-			_, _, _, err =
+			_, _, _, _, _, err :=
 				agb.Refresh.Rotate(
 					refreshToken,
 				)

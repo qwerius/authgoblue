@@ -54,6 +54,7 @@ func TestRevokedSessionRejectedByMiddleware(t *testing.T) {
 	if err != nil {
 		t.Fatalf(
 			"generate token error: %v",
+			err,
 		)
 	}
 

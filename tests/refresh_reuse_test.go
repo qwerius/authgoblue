@@ -15,8 +15,9 @@ func TestRefreshTokenReuseDetection(t *testing.T) {
 	agb, err :=
 		authgoblue.New(
 			authgoblue.Config{
-				Secret: "test-secret",
-				Issuer: "test",
+				Secret:   "test-secret",
+				Issuer:   "test",
+				Provider: &mockProvider{},
 			},
 		)
 
@@ -47,8 +48,7 @@ func TestRefreshTokenReuseDetection(t *testing.T) {
 		err,
 	)
 
-	// pertama berhasil
-	_, _, _, err =
+	_, _, _, _, _, err =
 		agb.Refresh.Rotate(
 			refreshToken,
 		)
@@ -58,8 +58,7 @@ func TestRefreshTokenReuseDetection(t *testing.T) {
 		err,
 	)
 
-	// token lama dipakai lagi
-	_, _, _, err =
+	_, _, _, _, _, err =
 		agb.Refresh.Rotate(
 			refreshToken,
 		)
@@ -69,5 +68,4 @@ func TestRefreshTokenReuseDetection(t *testing.T) {
 		err,
 		refresh.ErrRefreshTokenReuse,
 	)
-
 }

@@ -13,9 +13,14 @@ func newRefreshFlowAuthGoBlue() *authgoblue.AuthGoBlue {
 	agb, err :=
 		authgoblue.New(
 			authgoblue.Config{
-				Secret:          "refresh-secret-key",
-				Issuer:          "refresh-service",
-				AccessTokenTTL:  15 * time.Minute,
+				Secret: "test-secret",
+
+				Issuer: "test",
+
+				Provider: &mockProvider{},
+
+				AccessTokenTTL: 15 * time.Minute,
+
 				RefreshTokenTTL: 7 * 24 * time.Hour,
 			},
 		)

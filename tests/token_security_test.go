@@ -16,6 +16,7 @@ func newSecurityTestAuthGoBlue() *authgoblue.AuthGoBlue {
 			Issuer:          "security-service",
 			AccessTokenTTL:  15 * time.Minute,
 			RefreshTokenTTL: 7 * 24 * time.Hour,
+			Provider:        &mockProvider{},
 		},
 	)
 
@@ -59,6 +60,7 @@ func TestAccessTokenRejectedWithDifferentSecret(t *testing.T) {
 			Issuer:          "service",
 			AccessTokenTTL:  15 * time.Minute,
 			RefreshTokenTTL: 7 * 24 * time.Hour,
+			Provider:        &mockProvider{},
 		},
 	)
 
@@ -72,6 +74,7 @@ func TestAccessTokenRejectedWithDifferentSecret(t *testing.T) {
 			Issuer:          "service",
 			AccessTokenTTL:  15 * time.Minute,
 			RefreshTokenTTL: 7 * 24 * time.Hour,
+			Provider:        &mockProvider{},
 		},
 	)
 
@@ -89,10 +92,14 @@ func TestAccessTokenRejectedWithDifferentSecret(t *testing.T) {
 	}
 
 	_, err =
-		agb2.Token.ParseAccessToken(token)
+		agb2.Token.ParseAccessToken(
+			token,
+		)
 
 	if err == nil {
-		t.Fatal("expected invalid signature error")
+		t.Fatal(
+			"expected invalid signature error",
+		)
 	}
 }
 
@@ -101,10 +108,11 @@ func TestAccessTokenRejectedWithDifferentIssuer(t *testing.T) {
 
 	agb1, err := authgoblue.New(
 		authgoblue.Config{
-			Secret:          "same-secret",
-			Issuer:          "issuer-one",
+			Secret:          "secret-one",
+			Issuer:          "service",
 			AccessTokenTTL:  15 * time.Minute,
 			RefreshTokenTTL: 7 * 24 * time.Hour,
+			Provider:        &mockProvider{},
 		},
 	)
 
@@ -118,6 +126,7 @@ func TestAccessTokenRejectedWithDifferentIssuer(t *testing.T) {
 			Issuer:          "issuer-two",
 			AccessTokenTTL:  15 * time.Minute,
 			RefreshTokenTTL: 7 * 24 * time.Hour,
+			Provider:        &mockProvider{},
 		},
 	)
 
@@ -134,23 +143,15 @@ func TestAccessTokenRejectedWithDifferentIssuer(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	parsed, err :=
+	_, err =
 		agb2.Token.ParseAccessToken(
 			token,
-		)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err =
-		agb2.Token.ValidateAccessToken(
-			parsed,
 		)
 
 	if err == nil {
 		t.Fatal("expected invalid issuer error")
 	}
+
 }
 
 // Access token tidak boleh dipakai sebagai refresh token

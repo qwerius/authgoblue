@@ -6,25 +6,20 @@ import (
 	"github.com/qwerius/authgoblue/claims"
 	"github.com/qwerius/authgoblue/hooks"
 	coreRefresh "github.com/qwerius/authgoblue/refresh"
-	"github.com/qwerius/authgoblue/token"
 )
 
 type Service struct {
-	token *token.Service
-
 	refresh *coreRefresh.Service
 
 	hooks *hooks.Registry
 }
 
 func New(
-	tokenService *token.Service,
 	refreshService *coreRefresh.Service,
 	hookRegistry *hooks.Registry,
 ) *Service {
 
 	return &Service{
-		token:   tokenService,
 		refresh: refreshService,
 		hooks:   hookRegistry,
 	}
@@ -38,18 +33,11 @@ func (s *Service) Execute(
 	accessToken,
 		refreshToken,
 		tokenClaims,
+		accessExpiresAt,
+		refreshExpiresAt,
 		err :=
 		s.refresh.Rotate(
 			req.RefreshToken,
-		)
-
-	if err != nil {
-		return nil, err
-	}
-
-	accessClaims, err :=
-		s.token.ParseAccessToken(
-			accessToken,
 		)
 
 	if err != nil {
@@ -77,9 +65,11 @@ func (s *Service) Execute(
 
 		RefreshToken: refreshToken,
 
-		AccessExpiresAt: accessClaims.ExpiresAt,
+		AccessExpiresAt: accessExpiresAt,
+		AccessExpiresIn: accessExpiresAt - tokenClaims.IssuedAt,
 
-		RefreshExpiresAt: tokenClaims.ExpiresAt,
+		RefreshExpiresAt: refreshExpiresAt,
+		RefreshExpiresIn: refreshExpiresAt - tokenClaims.IssuedAt,
 
 		Claims: claims.Claims{
 

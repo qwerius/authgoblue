@@ -10,7 +10,6 @@ func TestRefreshTokenRotation(t *testing.T) {
 
 	agb := newTestAuthGoBlue(t)
 
-	// buat session awal
 	sess, err :=
 		agb.Session.Create(
 			"user-123",
@@ -35,6 +34,8 @@ func TestRefreshTokenRotation(t *testing.T) {
 
 	newAccess,
 		newRefresh,
+		refreshClaims,
+		accessExpiresAt,
 		refreshExpiresAt,
 		err :=
 		agb.Refresh.Rotate(
@@ -61,7 +62,15 @@ func TestRefreshTokenRotation(t *testing.T) {
 
 	}
 
-	if refreshExpiresAt.ExpiresAt <= 0 {
+	if accessExpiresAt <= 0 {
+
+		t.Fatal(
+			"expected access expires at",
+		)
+
+	}
+
+	if refreshExpiresAt <= 0 {
 
 		t.Fatal(
 			"expected refresh expires at",
@@ -69,8 +78,14 @@ func TestRefreshTokenRotation(t *testing.T) {
 
 	}
 
-	// refresh token baru harus memiliki session yang sama
-	// karena rotation tidak membuat session baru
+	if refreshClaims.SessionID != sess.ID {
+
+		t.Fatal(
+			"expected same session after rotation",
+		)
+
+	}
+
 	newClaims, err :=
 		agb.Token.ParseRefreshToken(
 			newRefresh,
@@ -96,8 +111,7 @@ func TestRefreshTokenRotation(t *testing.T) {
 
 	}
 
-	// refresh token lama harus ditolak
-	_, _, _, err =
+	_, _, _, _, _, err =
 		agb.Refresh.Rotate(
 			oldRefresh,
 		)

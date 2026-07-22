@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/qwerius/authgoblue"
 	"github.com/qwerius/authgoblue/claims"
@@ -14,22 +13,23 @@ import (
 
 func newMiddlewareOptionTestAuthGoBlue() *authgoblue.AuthGoBlue {
 
-	agb, err := authgoblue.New(
-		authgoblue.Config{
+	agb, err :=
+		authgoblue.New(
+			authgoblue.Config{
 
-			Secret: "options-secret",
+				Secret: "test-secret",
 
-			Issuer: "options-service",
+				Issuer: "test",
 
-			AccessTokenTTL: 15 * time.Minute,
+				Provider: &mockProvider{},
 
-			RefreshTokenTTL: 7 * 24 * time.Hour,
+				Header: "X-Auth-Token",
 
-			Header: "X-Auth-Token",
+				Prefix: "Token",
 
-			Prefix: "Token",
-		},
-	)
+				Cookie: false,
+			},
+		)
 
 	if err != nil {
 		panic(err)

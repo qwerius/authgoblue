@@ -7,8 +7,9 @@ type Response struct {
 
 	RefreshToken string
 
-	Claims          claims.Claims
-	AccessExpiresAt int64
-
-	RefreshExpiresAt int64
+	Claims           claims.Claims
+	AccessExpiresAt  int64 `json:"access_expires_at"`
+	AccessExpiresIn  int64 `json:"access_expires_in"`
+	RefreshExpiresAt int64 `json:"refresh_expires_at"`
+	RefreshExpiresIn int64 `json:"refresh_expires_in"`
 }

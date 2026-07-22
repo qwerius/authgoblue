@@ -36,6 +36,8 @@ func (s *Service) Rotate(
 	string,
 	string,
 	claims.Claims,
+	int64,
+	int64,
 	error,
 ) {
 
@@ -45,7 +47,7 @@ func (s *Service) Rotate(
 		)
 
 	if err != nil {
-		return "", "", claims.Claims{}, err
+		return "", "", claims.Claims{}, 0, 0, err
 	}
 
 	err =
@@ -54,12 +56,12 @@ func (s *Service) Rotate(
 		)
 
 	if err != nil {
-		return "", "", claims.Claims{}, err
+		return "", "", claims.Claims{}, 0, 0, err
 	}
 
 	if oldClaims.SessionID == "" {
 
-		return "", "", claims.Claims{}, ErrMissingSessionID
+		return "", "", claims.Claims{}, 0, 0, ErrMissingSessionID
 	}
 
 	// cek session masih aktif
@@ -69,12 +71,12 @@ func (s *Service) Rotate(
 		)
 
 	if err != nil {
-		return "", "", claims.Claims{}, err
+		return "", "", claims.Claims{}, 0, 0, err
 	}
 
 	if currentSession.Revoked {
 
-		return "", "", claims.Claims{}, session.ErrSessionRevoked
+		return "", "", claims.Claims{}, 0, 0, session.ErrSessionRevoked
 	}
 
 	// atomic consume refresh token
@@ -91,12 +93,12 @@ func (s *Service) Rotate(
 			)
 
 		if err != nil {
-			return "", "", claims.Claims{}, err
+			return "", "", claims.Claims{}, 0, 0, err
 		}
 
 		if !ok {
 
-			return "", "", claims.Claims{}, ErrRefreshTokenReuse
+			return "", "", claims.Claims{}, 0, 0, ErrRefreshTokenReuse
 		}
 	}
 
@@ -108,7 +110,7 @@ func (s *Service) Rotate(
 
 	if err != nil {
 
-		return "", "", claims.Claims{}, err
+		return "", "", claims.Claims{}, 0, 0, err
 	}
 
 	newClaims := claims.Claims{
@@ -133,7 +135,7 @@ func (s *Service) Rotate(
 
 	if err != nil {
 
-		return "", "", claims.Claims{}, err
+		return "", "", claims.Claims{}, 0, 0, err
 	}
 
 	newRefresh, err :=
@@ -143,8 +145,31 @@ func (s *Service) Rotate(
 
 	if err != nil {
 
-		return "", "", claims.Claims{}, err
+		return "", "", claims.Claims{}, 0, 0, err
 	}
 
-	return newAccess, newRefresh, newClaims, nil
+	accessClaims, err :=
+		s.token.ParseAccessToken(
+			newAccess,
+		)
+
+	if err != nil {
+		return "", "", claims.Claims{}, 0, 0, err
+	}
+
+	refreshClaims, err :=
+		s.token.ParseRefreshToken(
+			newRefresh,
+		)
+
+	if err != nil {
+		return "", "", claims.Claims{}, 0, 0, err
+	}
+
+	return newAccess,
+		newRefresh,
+		newClaims,
+		accessClaims.ExpiresAt,
+		refreshClaims.ExpiresAt,
+		nil
 }

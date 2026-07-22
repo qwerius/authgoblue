@@ -31,6 +31,8 @@ func TestAuthGoBlueUsesCustomRevokeStore(t *testing.T) {
 
 				Issuer: "test",
 
+				Provider: &mockProvider{},
+
 				RevokeStore: store,
 			},
 		)
@@ -56,13 +58,17 @@ func TestAuthGoBlueDefaultUsesMemoryRevokeStore(t *testing.T) {
 			authgoblue.Config{
 
 				Secret: "test-secret",
+
 				Issuer: "test",
+
+				Provider: &mockProvider{},
 			},
 		)
 
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	if agb.Revoke == nil {
 
 		t.Fatal(

@@ -29,7 +29,7 @@ func TestNewAppliesDefaults(t *testing.T) {
 		t.Fatalf("expected default prefix Bearer, got %q", cfg.Prefix)
 	}
 
-	if cfg.AccessCookieName != "github.com/qwerius/authgoblue_token" {
+	if cfg.AccessCookieName != "access_token" {
 		t.Fatalf("expected default cookie name authgoblue_token, got %q", cfg.AccessCookieName)
 	}
 
@@ -346,6 +346,7 @@ func TestAuthGoBlueUsesCustomSessionStore(t *testing.T) {
 		Cookie:           false,
 		AccessCookieName: "github.com/qwerius/authgoblue_token",
 		SessionStore:     customStore,
+		Provider:         &mockProvider{},
 	})
 
 	if err != nil {
@@ -844,7 +845,8 @@ func TestAuthGoBlueDefaultMaxSessions(t *testing.T) {
 
 	agb, err := authgoblue.New(
 		authgoblue.Config{
-			Secret: "secret",
+			Secret:   "secret",
+			Provider: &mockProvider{},
 		},
 	)
 
@@ -866,6 +868,7 @@ func TestAuthGoBlueCustomMaxSessions(t *testing.T) {
 		authgoblue.Config{
 			Secret:      "secret",
 			MaxSessions: 10,
+			Provider:    &mockProvider{},
 		},
 	)
 	if err != nil {
@@ -944,6 +947,8 @@ func TestRefreshRotationCreatesNewSession(t *testing.T) {
 	newAccess,
 		newRefresh,
 		refreshClaims,
+		accessExpiresAt,
+		refreshExpiresAt,
 		err :=
 		agb.Refresh.Rotate(
 			refreshToken,
@@ -954,15 +959,33 @@ func TestRefreshRotationCreatesNewSession(t *testing.T) {
 	}
 
 	if newAccess == "" {
-		t.Fatal("expected new access token")
+		t.Fatal(
+			"expected new access token",
+		)
 	}
 
 	if newRefresh == "" {
-		t.Fatal("expected new refresh token")
+		t.Fatal(
+			"expected new refresh token",
+		)
 	}
 
-	if refreshClaims.ExpiresAt == 0 {
-		t.Fatal("expected refresh token expiry")
+	if refreshClaims.SessionID != sess.ID {
+		t.Fatal(
+			"expected same session id",
+		)
+	}
+
+	if accessExpiresAt <= 0 {
+		t.Fatal(
+			"expected access expires at",
+		)
+	}
+
+	if refreshExpiresAt <= 0 {
+		t.Fatal(
+			"expected refresh expires at",
+		)
 	}
 }
 
@@ -991,7 +1014,7 @@ func TestRefreshRotationRejectsReuse(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, _, _, err =
+	_, _, _, _, _, err =
 		agb.Refresh.Rotate(
 			refreshToken,
 		)
@@ -1000,7 +1023,7 @@ func TestRefreshRotationRejectsReuse(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, _, _, err =
+	_, _, _, _, _, err =
 		agb.Refresh.Rotate(
 			refreshToken,
 		)
@@ -1010,14 +1033,16 @@ func TestRefreshRotationRejectsReuse(t *testing.T) {
 			"expected refresh reuse error",
 		)
 	}
-
 }
 
 func FuzzParseToken(f *testing.F) {
 
-	agb, err := authgoblue.New(authgoblue.Config{
-		Secret: "fuzz-secret",
-	})
+	agb, err := authgoblue.New(
+		authgoblue.Config{
+			Secret:   "fuzz-secret",
+			Provider: &mockProvider{},
+		},
+	)
 
 	if err != nil {
 		f.Fatal(err)
@@ -1025,10 +1050,11 @@ func FuzzParseToken(f *testing.F) {
 
 	f.Add("invalid.token.data")
 
-	f.Fuzz(func(t *testing.T, token string) {
+	f.Fuzz(
+		func(t *testing.T, token string) {
 
-		_, _ = agb.Token.Parse(token)
+			_, _ = agb.Token.Parse(token)
 
-	})
-
+		},
+	)
 }

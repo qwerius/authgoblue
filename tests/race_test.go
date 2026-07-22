@@ -22,6 +22,7 @@ func TestAuthGoBlueConcurrentTokenGeneration(
 				Issuer: "race-service",
 
 				AccessTokenTTL: 15 * time.Minute,
+				Provider:       &mockProvider{},
 			},
 		)
 

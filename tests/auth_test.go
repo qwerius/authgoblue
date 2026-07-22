@@ -90,13 +90,11 @@ func (m *mockProvider) VerifyEmail(
 
 func TestAuthClientLogin(t *testing.T) {
 
-	provider := &mockProvider{}
-
 	agb, err := authgoblue.New(
 		authgoblue.Config{
 			Secret:   "secret",
 			Issuer:   "test",
-			Provider: provider,
+			Provider: &mockProvider{},
 		},
 	)
 	if err != nil {

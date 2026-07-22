@@ -84,13 +84,15 @@ func (c *Client) Logout() *logout.Service {
 
 func (c *Client) Refresh() *refresh.Service {
 
-	return refresh.New(
-		c.token,
+	rotateService :=
 		coreRefresh.NewService(
 			c.token,
 			c.revoke,
 			c.session,
-		),
+		)
+
+	return refresh.New(
+		rotateService,
 		c.hooks,
 	)
 }

@@ -56,7 +56,6 @@ func BenchmarkRefreshTokenAtomicRotation(
 		refreshToken, err :=
 			agb.Token.GenerateRefreshToken(
 				claims.Claims{
-
 					UserID: "user-bench",
 
 					SessionID: sess.ID,
@@ -67,7 +66,7 @@ func BenchmarkRefreshTokenAtomicRotation(
 			b.Fatal(err)
 		}
 
-		_, _, _, err =
+		_, _, _, _, _, err =
 			agb.Refresh.Rotate(
 				refreshToken,
 			)
